@@ -1,0 +1,8 @@
+*~
+*/build-*
+bags/*.bag*
+*.pyc
+.DS_Store
+.idea/*
+face*.png
+
