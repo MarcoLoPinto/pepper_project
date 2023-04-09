@@ -24,10 +24,12 @@ class PepperBot:
         self.sensorSonarBack = 0.0
         self.sensorFrontLaserDistance = 0.0
 
+        self.stopFaceDetectionEvent()
+
         self.laserThread = None # TODO, or not
 
 
-    def connect(self, ip="127.0.0.1", port=9559, alive = False):
+    def connect(self, ip="127.0.0.1", port=9559, alive=False):
         self.ip = ip
         self.port = port
 
@@ -84,23 +86,15 @@ class PepperBot:
         self._init_robot()
         self._log_info("Quitted robot.")
 
-    def angleInterpolation(self, names, keys, times, isAbsolute, blocking = True):
-        service = 'ALMotion'
-        if self.services[service] != None:
-            if blocking:
-                self.services[service].angleInterpolation(names, keys, times, isAbsolute)
-                return None
-            else:
-                threadService = self.services[service].post.angleInterpolation(names, keys, times, isAbsolute)
-                return threadService
-        else:
-            self._log_error("Service %s not activated!" %(service))
+    # ---------------------- non-blocking miscellaneous -----------------------------
 
     def waitForThread(self, thread_ref, service):
         if self.services[service] != None:
             self.services[service].wait(thread_ref, 0)
         else:
             self._log_error("Service %s not activated!" %(service))
+
+    # ---------------------- speak and/or movement -----------------------------
 
     def say(self, text, speed = 60, blocking = True):
         service = 'ALTextToSpeech'
@@ -111,6 +105,18 @@ class PepperBot:
                 return None
             else:
                 threadService = self.services[service].post.say(text)
+                return threadService
+        else:
+            self._log_error("Service %s not activated!" %(service))
+
+    def angleInterpolation(self, names, keys, times, isAbsolute, blocking = True):
+        service = 'ALMotion'
+        if self.services[service] != None:
+            if blocking:
+                self.services[service].angleInterpolation(names, keys, times, isAbsolute)
+                return None
+            else:
+                threadService = self.services[service].post.angleInterpolation(names, keys, times, isAbsolute)
                 return threadService
         else:
             self._log_error("Service %s not activated!" %(service))
@@ -127,6 +133,7 @@ class PepperBot:
         else:
             self._log_error("Service %s not activated!" %(service))
 
+    # ------------------------------ eyes colors ----------------------------------
 
     def eyesColors(self, r=0,g=0,b=0, duration = -1, part = 'Both'):
         service = 'ALLeds'
@@ -163,6 +170,7 @@ class PepperBot:
     def eyesBlue(self, duration = -1):
         self.eyesColors(0,0,1, duration)
         
+    # ---------------------------- console logging --------------------------------
     
     def _log_general(self,name,color,*args):
         print("%s[%s]%s %s" %(self._colors[color],name,self._colors['RESET'],str(args[0])))
@@ -177,13 +185,15 @@ class PepperBot:
     def _log_success(self,*args):
         self._log_general('SUCCESS','GREEN',*args)
 
+    # ------------------- sensors (sonar, touch, laser) --------------------------
+
     def startSensorThread(self):
         if self.sensorThread == None:
             self.sensorThread = threading.Thread(target=self._sensorThread, args=(self,))
             self.sensorThread.start()
 
     def stopSensorThread(self):
-        if self.sensorThread != None:
+        if hasattr(self, 'sensorThread') and hasattr(self.sensorThread, 'do_run'):
             self.sensorThread.do_run = False
         self.sensorThread = None
 
@@ -226,3 +236,26 @@ class PepperBot:
             self.sensorFrontLaserDistance = dd / c if c>0 else 10.0
 
             time.sleep(0.2)
+
+    # ------------------- face tracking, detection... --------------------------
+
+    def stopFaceDetectionEvent(self):
+        pass
+
+    def stopVideoFrameGrabberEvent(self):
+        service = 'ALVideoDevice'
+        if self.services[service] == None: return
+        if hasattr(self, 'robotCameraEvent') and self.robotCameraEvent != None:
+            self.services[service].unsubscribe(self.robotCameraEvent)
+        self.robotCameraEvent = None
+
+    def startVideoFrameGrabberEvent(self):
+        service = 'ALVideoDevice'
+        if self.services[service] == None:
+            self._log_error("Service %s not activated! startVideoFrameGrabberEvent cannot start!" %(service))
+            return
+        resolution = 2    # VGA
+        colorSpace = 11   # RGB
+        self.robotCameraEvent = self.services[service].subscribeCamera("grab3_images", 0, resolution, colorSpace, 5)
+
+    
