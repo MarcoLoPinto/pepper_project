@@ -1,9 +1,13 @@
 import os, sys
 import qi
 from naoqi import ALProxy
-import threading
 import math
 import time
+
+import threading
+
+from PIL import Image
+import socket
 
 class PepperBot:
     def __init__(self, ip, port = 9559, alive = False):
@@ -257,5 +261,54 @@ class PepperBot:
         resolution = 2    # VGA
         colorSpace = 11   # RGB
         self.robotCameraEvent = self.services[service].subscribeCamera("grab3_images", 0, resolution, colorSpace, 5)
+
+    def getCameraImage(self):
+        if not hasattr(self, 'robotCameraEvent') or self.robotCameraEvent == None:
+            self._log_error("The startVideoFrameGrabberEvent was never called! Start it first!")
+            return None
+
+        img = self.camProxy.getImageRemote(self.robotCameraEvent)
+        if img is None:
+            self._log_error("Cannot get the image from the startVideoFrameGrabberEvent!")
+            return None
+        
+        imageWidth = img[0]
+        imageHeight = img[1]
+        imageArray = img[6]
+
+        # Create a PIL Image from our pixel array.
+        imx = Image.frombytes("RGB", (imageWidth, imageHeight), imageArray)
+        return imx
+
+
+    def sendImage(self, ip, port):
+        imx = self.getCameraImage()
+        if imx == None: return None
+
+        # Convert to grayscale
+        img = imx.convert('L')   
+        aimg = img.tobytes()
+
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((ip,port))
+
+            msg = '%9d\n' %len(aimg)
+            s.send(msg.encode())
+            s.send(aimg)
+
+            data = s.recv(80)
+            rcv_msg = data.decode()
+            s.close()
+            return rcv_msg
+        except:
+            self._log_error("Cannot send the image got from the startVideoFrameGrabberEvent!")
+            return None
+        
+    def saveImage(self, filepath):
+        imx = self.getCameraImage()
+        if imx == None:
+            self._log_error("Cannot save the image from the startVideoFrameGrabberEvent!")
+        imx.save(filepath, "PNG")
 
     
