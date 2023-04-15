@@ -243,8 +243,47 @@ class PepperBot:
 
     # ------------------- face tracking, detection... --------------------------
 
+    def onFaceDetected(self, value):
+        faceID = -1
+
+        if value == []: # empty value when the face disappears
+            self.faceRecognized = False
+        elif not self.faceRecognized: # only the first time a face appears
+            self.faceRecognized = True
+
+            facetimeStamp = value[0]
+            faceInfoArray = value[1]
+
+            for j in range( len(faceInfoArray)-1 ):
+
+                faceInfo = faceInfoArray[j]
+                faceShapeInfo = faceInfo[0]
+                faceExtraInfo = faceInfo[1]
+                faceID = faceExtraInfo[0]
+
+        if self.services['ALVideoDevice'] != None and faceID>=0 and faceID not in self.facesSaved:
+            fname = "face_%09d.png" %faceID
+            if self.saveCameraImage(fname) == None:
+                self._log_error("Cannot save face image from onFaceDetected callback!")
+            self.facesSaved.append(faceID)
+
     def stopFaceDetectionEvent(self):
-        pass
+        if hasattr(self, 'faceDetectionId') and self.faceDetectionId != None:
+            self.faceDetectionSubscriber.signal.disconnect(self.faceDetectionId)
+        self.faceDetectionId = None
+        self.stopVideoFrameGrabberEvent()
+        self.faceRecognized = False
+        self.faceDetectionIsActive = False
+
+    def startFaceDetectionEvent(self):
+        if self.robotCameraEvent != None: return
+        self.startVideoFrameGrabberEvent() # connect to camera
+
+        self.faceDetectionSubscriber = self.services['ALMemory'].subscriber("FaceDetected")
+        self.faceDetectionId = self.faceDetectionSubscriber.signal.connect(self.onFaceDetected)
+        self.faceRecognized = False
+        self.facesSaved = []
+        self.faceDetectionIsActive = True
 
     def stopVideoFrameGrabberEvent(self):
         service = 'ALVideoDevice'
@@ -258,6 +297,9 @@ class PepperBot:
         if self.services[service] == None:
             self._log_error("Service %s not activated! startVideoFrameGrabberEvent cannot start!" %(service))
             return
+        if self.robotCameraEvent != None:
+            self._log_error("The startVideoFrameGrabberEvent already started!")
+            return
         resolution = 2    # VGA
         colorSpace = 11   # RGB
         self.robotCameraEvent = self.services[service].subscribeCamera("grab3_images", 0, resolution, colorSpace, 5)
@@ -267,7 +309,7 @@ class PepperBot:
             self._log_error("The startVideoFrameGrabberEvent was never called! Start it first!")
             return None
 
-        img = self.camProxy.getImageRemote(self.robotCameraEvent)
+        img = self.services['ALVideoDevice'].getImageRemote(self.robotCameraEvent)
         if img is None:
             self._log_error("Cannot get the image from the startVideoFrameGrabberEvent!")
             return None
@@ -279,9 +321,16 @@ class PepperBot:
         # Create a PIL Image from our pixel array.
         imx = Image.frombytes("RGB", (imageWidth, imageHeight), imageArray)
         return imx
+    
+    def saveCameraImage(self, filepath):
+        imx = self.getCameraImage()
+        if imx == None:
+            self._log_error("Cannot save the image from the startVideoFrameGrabberEvent!")
+            return None
+        imx.save(filepath, "PNG")
+        return imx
 
-
-    def sendImage(self, ip, port):
+    def sendCameraImage(self, ip, port):
         imx = self.getCameraImage()
         if imx == None: return None
 
@@ -305,10 +354,8 @@ class PepperBot:
             self._log_error("Cannot send the image got from the startVideoFrameGrabberEvent!")
             return None
         
-    def saveImage(self, filepath):
-        imx = self.getCameraImage()
-        if imx == None:
-            self._log_error("Cannot save the image from the startVideoFrameGrabberEvent!")
-        imx.save(filepath, "PNG")
+    
+    
+    
 
     
