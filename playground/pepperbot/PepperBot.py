@@ -77,18 +77,30 @@ class PepperBot:
         else:
             self._log_success("All services activated!")
 
-        if self.services['ALBackgroundMovement'] != None:
-            for aliveService in ['ALBackgroundMovement', 'ALBasicAwareness', 'ALSpeakingMovement']:
-                if self.services[aliveService] != None:
-                    self.services[aliveService].setEnabled(alive)
-                    self._log_info("Alive service %s set to %s!" %(aliveService, str(alive)))
-                else:
-                    self._log_error("Alive service %s cannot be enabled/disabled." %(aliveService))
+        self.setAliveBehaviour(alive=alive)
 
     def quit(self):
         self._log_info("Quitting robot...")
         self._init_robot()
         self._log_info("Quitted robot.")
+
+    # ---------------------- alive behaviour -----------------------------
+
+    def setAliveBehaviour(self, alive = True):
+        notSetted = []
+        aliveServices = ['ALBackgroundMovement', 'ALBasicAwareness', 'ALSpeakingMovement']
+        for aliveService in aliveServices:
+            if self.services[aliveService] != None:
+                self.services[aliveService].setEnabled(alive)
+            else:
+                notSetted.append(aliveService)
+        
+        if len(notSetted) == 0:
+            self._log_info("All alive services are set to %s." %(str(alive)))
+        elif len(notSetted) == len(aliveServices):
+            self._log_error("All alive services cannot be enabled/disabled: %s" %((', ').join(notSetted)))
+        else:
+            self._log_error("Some alive services cannot be enabled/disabled: %s" %((', ').join(notSetted)))
 
     # ---------------------- non-blocking miscellaneous -----------------------------
 
