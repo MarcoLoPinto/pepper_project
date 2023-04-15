@@ -274,6 +274,7 @@ class PepperBot:
                 faceID = faceExtraInfo[0]
 
         if self.services['ALVideoDevice'] != None and faceID>=0 and faceID not in self.facesSaved:
+            self._log_info("New face detected, face id: %s, saved faces: %s" %(faceID, (', ').join(self.facesSaved))) # TODO remove after test
             fname = "face_%09d.png" %faceID
             if self.saveCameraImage(fname) == None:
                 self._log_error("Cannot save face image from onFaceDetected callback!")
