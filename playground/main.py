@@ -2,7 +2,7 @@ import os, sys
 from pepperbot.PepperBot import PepperBot
 import pepperbot.PepperMotions as motions
 
-robot = PepperBot("127.0.0.1",33953,alive=False)
+robot = PepperBot("127.0.0.1",45417,alive=False)
 
 # robot.angleInterpolation(*bothArmsBumpInFront())
 # robot.say("Hi Marco! My name is Pepper and this is a long sentence to see some basic functions!")

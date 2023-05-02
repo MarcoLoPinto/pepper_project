@@ -300,7 +300,7 @@ class PepperBot:
 
     def stopVideoFrameGrabberEvent(self):
         service = 'ALVideoDevice'
-        if self.services[service] == None: return
+        if self.services == None or self.services[service] == None: return
         if hasattr(self, 'robotCameraEvent') and self.robotCameraEvent != None:
             self.services[service].unsubscribe(self.robotCameraEvent)
         self.robotCameraEvent = None
