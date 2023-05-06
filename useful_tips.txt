@@ -1,9 +1,8 @@
+# ---------------- PEPPER -----------------
+
 # Run an image
 cd iocchi-hri_software/docker/
 ./run.bash
-
-# After running, access the container via:
-docker exec -it pepperhri tmux a
 
 # To see all images in docker, do:
 docker images
@@ -14,13 +13,18 @@ docker container ls
 # To stop a container:
 docker container stop <container_id>
 
-# To exit the tmux session and detach from it without destroying it, you can use the following key combination:
+# After running, access the container via:
+docker exec -it pepperhri tmux a
+
+# To exit the tmux session and detach from it without destroying it:
 Press Ctrl-b (the prefix key for tmux commands).
 Then press d (for "detach").
 This will detach you from the tmux session and return you to the Docker host shell.
 
-# If you want to completely destroy the tmux session, including all of its windows and panes, you can do the following:
-Attach to the tmux session using the same command you used before: docker exec -it pepperhri tmux a.
+# If you want to completely destroy the tmux session, including all of its windows and panes:
 Type exit or Ctrl-d to exit all shells and processes running inside the tmux session.
 Type tmux kill-session to destroy the tmux session.
 This will completely destroy the tmux session and all of its associated processes.
+
+# ---------------- MODIM -----------------
+
