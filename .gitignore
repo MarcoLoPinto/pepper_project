@@ -6,3 +6,5 @@ choregraphe-suite-2.5.10.7-linux64-setup.run
 choregraphe_license.txt
 hri_software/
 
+__pycache__
+*.pyc

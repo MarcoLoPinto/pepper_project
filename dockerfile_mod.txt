@@ -1,0 +1,7 @@
+# Add the lines below in the Dockerfile before setting the PYTHONPATH env var and before changing the user to "robot" (paste them on line 54)
+
+# Install requirements for additional code
+COPY downloads/requirements.txt .
+RUN sudo apt-get update && apt-get install -y software-properties-common && add-apt-repository universe && apt install -y python3-pip python3-eventlet
+# RUN pip3 install -r requirements.txt && rm requirements.txt
+RUN pip3 install -y flask flask-socketio
