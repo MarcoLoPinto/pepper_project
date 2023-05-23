@@ -24,16 +24,26 @@ class Command {
 
 const socket = io();
 
-const sendButton = document.getElementById('send-btn');
+const form = document.getElementById("form")
+const byeButton = document.getElementById('bye-btn');
 const messageInput = document.getElementById('message-input');
 
-sendButton.addEventListener('click', () => {
-    const message = messageInput.value;
+form.addEventListener('submit', () => {
+    const message = messageInput.value.trim();
+    if (message.length == 0) return
     command = new Command({data:{
         msg: message
     }})
     socket.emit('command', command.toJson());
     messageInput.value = '';
+});
+
+byeButton.addEventListener('click', (e) => {
+    e.preventDefault()
+    command = new Command({data:{
+        msg: "BYE"
+    }})
+    socket.emit('command', command.toJson());
 });
 
 

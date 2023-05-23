@@ -25,6 +25,13 @@
       border-radius: 10px;
     }
 
+    .buttons-box {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
     input[type="text"] {
       width: 300px;
       height: 30px;
@@ -34,7 +41,7 @@
       border-radius: 5px;
     }
 
-    #send-btn {
+    button {
       width: 100px;
       height: 30px;
       background-color: #4CAF50;
@@ -42,18 +49,31 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin: 0 10px;
     }
 
-    #send-btn:hover {
+    button:hover {
       background-color: #45a049;
+    }
+    
+    #bye-btn {
+      background-color: red;
+    }
+    #bye-btn:hover {
+      background-color: rgb(156, 42, 42);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="command-box">
-      <input type="text" placeholder="Enter your message" id="message-input">
-      <button id="send-btn">Send</button>
+      <form id="form">
+        <input type="text" placeholder="Enter your message" id="message-input">
+        <div class="buttons-box">
+          <button type="submit" id="send-btn">Send</button>
+          <button id="bye-btn">Close</button>
+        </div>
+      </form>
     </div>
   </div>
   

@@ -15,6 +15,7 @@ class IPCClient():
     
     def disconnect(self):
         print("Disconnecting ipc client...")
+        self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
         if self.t != None: self.t = None
 
