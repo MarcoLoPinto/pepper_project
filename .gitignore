@@ -8,3 +8,11 @@ hri_software/
 
 __pycache__
 *.pyc
+
+!.gitkeep
+
+# docker installation files
+docker/downloads/*
+
+# gitkeep
+!.gitkeep
