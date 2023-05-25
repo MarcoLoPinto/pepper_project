@@ -10,7 +10,7 @@ if [ ! "$1" == "" ]; then
 fi
 
 # change setings here if needed
-ROOT_PROJECT=~/Magistrale/HRI/pepper_project
+ROOT_PROJECT=$(pwd)/..
 CAMERA_DEVICE=/dev/video0
 PEPPER_TOOLS_HOME=$ROOT_PROJECT/src/Pepper/pepper_tools
 MODIM_HOME=$ROOT_PROJECT/src/modim
