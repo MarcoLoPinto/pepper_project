@@ -36,10 +36,10 @@ class RAIMServer:
             self.ipc.dispatch_command(command)
 
         # executed when a client sends a request
-        self.ipc.send_command = lambda c: self.robot_command(c) 
+        self.ipc.set_command_listener(lambda c: self.robot_command(c))
 
     def robot_command(self, command: Command):
-        self.socketio.emit("command",command.toJson())
+        self.socketio.emit("command",command.serialize())
 
     def run(self,port=5000):
         print("Running ipc server...")

@@ -15,6 +15,9 @@ class Command():
     def __repr__(self) -> str:
         return self.toJson()
     
+    def serialize(self) -> dict:
+        return {"request": self.request, "id": self.id, "data":self.data}
+    
     @classmethod
     def fromJson(cls, json_str: str):
         j_obj = json.loads(json_str)

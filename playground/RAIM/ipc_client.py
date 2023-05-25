@@ -4,16 +4,22 @@ from command_py2 import Command
 
 class IPCClient():
     def __init__(self):
-        self.execute_command = None
+        self.execute_command = None # The function called when the server sends a command to this client 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.t = None
     
     def connect(self, port=5001):
+        """
+        Connects this client to the server using the provided port
+        """
         self.sock.connect(("localhost",port))
         self.t = threading.Thread(target=self.receive_command)
         self.t.start()
     
     def disconnect(self):
+        """
+        Disconnects this client from the server
+        """
         print("Disconnecting ipc client...")
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
@@ -41,4 +47,10 @@ class IPCClient():
         """
         Called when a command or response from the robot needs to be forwarded to the browser 
         """
-        self.sock.sendall(command.toBytes())
+        self.sock.sendall(command.toBytes()+b"\r\t")
+    
+    def set_command_listener(self, func):
+        """
+        Sets the function to be called when the server sends a command to this client
+        """
+        self.execute_command = func

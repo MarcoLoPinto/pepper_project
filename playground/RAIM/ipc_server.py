@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import socket
 import threading
 from command import Command
@@ -84,3 +87,9 @@ class IPCServer():
             except Exception as e:
                 print(f"Failed to dispatch command to {addr}")
                 continue
+    
+    def set_command_listener(self, func):
+        """
+        Sets the function to be called when the client sends a command to this server
+        """
+        self.send_command = func

@@ -28,7 +28,8 @@ const form = document.getElementById("form")
 const byeButton = document.getElementById('bye-btn');
 const messageInput = document.getElementById('message-input');
 
-form.addEventListener('submit', () => {
+form.addEventListener('submit', (e) => {
+    e.preventDefault()
     const message = messageInput.value.trim();
     if (message.length == 0) return
     command = new Command({data:{
