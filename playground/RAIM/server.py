@@ -42,9 +42,9 @@ class RAIMServer:
         self.socketio.emit("command",command.serialize())
 
     def run(self,port=5000):
-        print("Running ipc server...")
+        print(f"Running ipc server on port {port+1}...")
         self.ipc.run(port+1)
-        print("Running http server...")
+        print(f"Running http server on port {port}...")
         self.socketio.run(self.app, port=port)
 
 if __name__ == "__main__":
