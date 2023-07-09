@@ -52,10 +52,14 @@ RUN if [ "$NAOQI" = "OK" ]; then \
     fi
 
 
-# Install requirements for additional code
+# Install requirements for additional code (flask server and python3)
 RUN sudo apt-get update && apt-get install -y software-properties-common && add-apt-repository universe && apt install -y python3-pip python3-eventlet
-# RUN pip3 install -r requirements.txt && rm requirements.txt
 RUN pip3 install flask flask-socketio
+# Install requirements for additional code (face recognition)
+RUN pip3 install dlib==19.22
+RUN pip3 install scikit-build
+RUN pip3 install opencv-python==4.2.0.32
+RUN pip3 install face_recognition
 
 #-- Python SDK
 

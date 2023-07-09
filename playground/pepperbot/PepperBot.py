@@ -60,6 +60,7 @@ class PepperBot:
             'ALAudioDevice':'ALAudioDevice',
             'ALBattery':'ALBattery',
             'ALPeoplePerception':'ALPeoplePerception',
+            'ALFaceDetection': 'ALFaceDetection'
         }
         not_activated_services = []
         for n,s in services.items():
@@ -348,7 +349,7 @@ class PepperBot:
         if imx == None: return None
 
         # Convert to grayscale
-        img = imx.convert('L')   
+        img = imx.convert('L')
         aimg = img.tobytes()
 
         try:
