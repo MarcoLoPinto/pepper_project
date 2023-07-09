@@ -16,6 +16,7 @@ RUN pip3 install dlib==19.22
 RUN pip3 install opencv-python
 RUN pip3 install face_recognition
 RUN pip3 install pyopenssl
+RUN pip3 install websocket-server
 
 # Set the default command to run when the container starts
 ADD init.bash /init.bash

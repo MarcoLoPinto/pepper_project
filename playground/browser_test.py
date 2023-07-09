@@ -24,7 +24,7 @@ def speak(command):
     msg = command.data["msg"]
     print(msg)
     msg = msg.encode("ascii","replace")
-    robot.say(msg, speed=16)
+    robot.say(msg, speed=60)
     if msg == "BYE":
         shutdown()
     if msg == "TOUCH":
