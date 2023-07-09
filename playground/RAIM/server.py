@@ -20,7 +20,7 @@ class RAIMServer:
         @self.app.route("/")
         def index():
             return send_file(f"{DIR}/pages/index.html")
-        @self.app.route("/<filename>")
+        @self.app.route("/<path:filename>")
         def serve(filename):
             path = f"{DIR}/pages/{filename}"
             # return send_file(path)
@@ -30,15 +30,14 @@ class RAIMServer:
                 return "Error 404, Not Found", 404
         
         @self.socketio.on('command')
-        def browser_command(command_json: str):
+        def command_from_browser(command_json: str):
             command = Command.fromJson(command_json)
-            print(f"Command {command.id} received: {command.data}")
             self.ipc.dispatch_command(command)
 
         # executed when a client sends a request
-        self.ipc.set_command_listener(lambda c: self.robot_command(c))
+        self.ipc.set_fn_send_command_to_browser(lambda c: self.send_command_to_browser(c))
 
-    def robot_command(self, command: Command):
+    def send_command_to_browser(self, command: Command):
         self.socketio.emit("command",command.serialize())
 
     def run(self,port=5000):

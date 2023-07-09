@@ -2,7 +2,8 @@ RAIMClient = {
     Command: null,
     dispatchCommand: null, // Called to send a command to the server, that will forward it to all the connected ipc clients
     executeCommand: null, // Called when a command is sent from an ipc client to this browser
-    setCommandListener: null // Sets the callback to receive commands from the ipc clients connected
+    setCommandListener: null, // Sets the callback to receive commands from the ipc clients connected,
+    debugPrint: true
 }
 
 RAIMClient.setCommandListener = function(callback) {
@@ -11,15 +12,24 @@ RAIMClient.setCommandListener = function(callback) {
 
 (function(BlockObject){
 
+    function dbgLog(text){
+        if(BlockObject.debugPrint) console.log(text)
+    }
+
     class Command {
-        constructor({request = true, id = Math.floor(Math.random() * 9000) + 1000, data = {}}) {
+        constructor({request = true, to_client_id = "0", from_client_id="browser", data = {}}) {
             this.request = request;
-            this.id = id;
+            this.to_client_id = to_client_id;
+            this.from_client_id = from_client_id;
             this.data = data;
+        }
+
+        serialize(){
+            return { "request": this.request, "to_client_id": this.to_client_id, "from_client_id": this.from_client_id, "data": this.data };            
         }
     
         toJson() {
-            const j_obj = { "request": this.request, "id": this.id, "data": this.data };
+            const j_obj = this.serialize()
             return JSON.stringify(j_obj);
         }
     
@@ -29,26 +39,32 @@ RAIMClient.setCommandListener = function(callback) {
     
         static fromJson(json_str) {
             const j_obj = JSON.parse(json_str);
-            return new Command(j_obj["request"], j_obj["id"], j_obj["data"]);
+            return Command.fromObject(j_obj)
+        }
+
+        static fromObject(obj){
+            return new Command({request:obj["request"], to_client_id:obj["to_client_id"], from_client_id:obj["from_client_id"], data:obj["data"]}); 
         }
     }
 
     BlockObject.Command = Command
 
     const socket = io();
+    dbgLog("Connected to socket server")
 
     /**
      * alled to send a command to the server, that will forward it to all the connected clients
      * @param {Command} command -- Command to send
      */
     BlockObject.dispatchCommand = function(command){
+        if(command.from_client_id == "") command.from_client_id = "browser"
         socket.emit('command', command.toJson());
-        console.log(`Sent command(${command.id}) to ipc clients`);
+        dbgLog(`Sent command to ${command.to_client_id}`);
     }
 
     socket.on('command', (jsonCommand) => {
-        let command = Command.fromJson(jsonCommand)
-        console.log(`Received command(${command.id}) from ipc clients`);
+        let command = typeof jsonCommand == "string" ? Command.fromJson(jsonCommand) : Command.fromObject(jsonCommand) 
+        dbgLog(`Received command from ${command.from_client_id}`);
         if( BlockObject.executeCommand != null ){
             BlockObject.executeCommand(command)
         }

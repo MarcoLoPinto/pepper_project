@@ -3,7 +3,7 @@ import signal
 from pepperbot.PepperBot import PepperBot
 import pepperbot.PepperMotions as motions
 from RAIM.ipc_client import IPCClient
-from RAIM.command_py2 import Command
+from RAIM.command import Command
 
 pepper_port = 34097
 server_port = 5001
@@ -13,7 +13,7 @@ if len(sys.argv) > 2:
     server_port = int(sys.argv[2])
 
 robot = PepperBot("127.0.0.1",pepper_port,alive=False)
-ipc = IPCClient()
+ipc = IPCClient("talking_robot")
 
 def shutdown(*args):
     print("Shutting down the script...")
@@ -28,7 +28,7 @@ def speak(command):
     if msg == "BYE":
         shutdown()
     if msg == "TOUCH":
-        command = Command(data={"data": "full duplex test"})
+        command = Command(data={"msg": "full duplex test"}, to_client_id="browser")
         ipc.dispatch_command(command)
 
 ipc.set_command_listener(speak)

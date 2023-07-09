@@ -7,9 +7,12 @@ form.addEventListener('submit', (e) => {
     e.preventDefault()
     const message = messageInput.value.trim();
     if (message.length == 0) return
-    command = new RAIMClient.Command({data:{
-        msg: message
-    }})
+    command = new RAIMClient.Command({
+        data:{
+            msg: message
+        },
+        to_client_id: "talking_robot"
+    })
     RAIMClient.dispatchCommand(command)
     // socket.emit('command', command.toJson());
     messageInput.value = '';
@@ -17,9 +20,12 @@ form.addEventListener('submit', (e) => {
 
 byeButton.addEventListener('click', (e) => {
     e.preventDefault()
-    command = new RAIMClient.Command({data:{
-        msg: "BYE"
-    }})
+    command = new RAIMClient.Command({
+        data:{
+            msg: "BYE"
+        },
+        to_client_id: "talking_robot"
+    })
     RAIMClient.dispatchCommand(command)
     // socket.emit('command', command.toJson());
 });

@@ -1,9 +1,11 @@
 import socket
 import threading
-from command_py2 import Command
+import random
+from command import Command
 
 class IPCClient():
-    def __init__(self):
+    def __init__(self, name="IPCClient_"+str(random.randint(1000,9999))):
+        self.name = name # The name of this client. Command having id equal to this name will be sent to this client
         self.execute_command = None # The function called when the server sends a command to this client 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.t = None
@@ -13,6 +15,7 @@ class IPCClient():
         Connects this client to the server using the provided port
         """
         self.sock.connect(("localhost",port))
+        self.sock.sendall(self.name.encode("utf-8")) 
         self.t = threading.Thread(target=self.receive_command)
         self.t.start()
     
@@ -41,16 +44,19 @@ class IPCClient():
                 command = Command.fromJson(full_data)
                 full_data = ""
                 if self.execute_command != None:
+                    print("IPCClient receive_command")
                     self.execute_command(command)
 
     def dispatch_command(self, command):
         """
-        Called when a command or response from the robot needs to be forwarded to the browser 
+        Called when this client has to send a command to another client/browser.
+        The command.to_client_id decides the receiver. If command.to_client_id is 0 the command is broadcasted
         """
+        if command.from_client_id == "": command.from_client_id = self.name
         self.sock.sendall(command.toBytes()+b"\r\t")
     
     def set_command_listener(self, func):
         """
-        Sets the function to be called when the server sends a command to this client
+        Sets the function to be called (callback) when the server has a command for this client
         """
         self.execute_command = func
