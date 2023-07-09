@@ -10,7 +10,7 @@ WORKDIR /
 RUN apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa -y && add-apt-repository universe -y
 RUN apt-get install -y python3.10 python3-pip python3-eventlet
 # RUN pip3 install --upgrade pip
-RUN pip3 install Flask flask-socketio
+RUN pip3 install Flask
 RUN pip3 install cmake
 RUN pip3 install dlib==19.22
 RUN pip3 install opencv-python

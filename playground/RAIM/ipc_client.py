@@ -10,11 +10,11 @@ class IPCClient():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.t = None
     
-    def connect(self, port=5001):
+    def connect(self, host="localhost", port=5001):
         """
         Connects this client to the server using the provided port
         """
-        self.sock.connect(("localhost",port))
+        self.sock.connect((host,port))
         self.sock.sendall(self.name.encode("utf-8")) 
         self.t = threading.Thread(target=self.receive_command)
         self.t.start()

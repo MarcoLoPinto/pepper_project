@@ -7,6 +7,7 @@ from RAIM.command import Command
 
 pepper_port = 34097
 server_port = 5001
+server_host = "localhost"
 if len(sys.argv) > 1:
     pepper_port = int(sys.argv[1])
 if len(sys.argv) > 2:
@@ -35,4 +36,4 @@ ipc.set_command_listener(speak)
 
 signal.signal(signal.SIGINT, shutdown) # Doesn't work. Stupid python 2!
 
-ipc.connect(server_port)
+ipc.connect(server_host, server_port)
