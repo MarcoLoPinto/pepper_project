@@ -3,7 +3,7 @@
 
 import socket
 import threading
-from command import Command
+from ipc_command import Command
 
 class IPCServer():
     def __init__(self) -> None:

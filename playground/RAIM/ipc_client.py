@@ -1,7 +1,7 @@
 import socket
 import threading
 import random
-from command import Command
+from .ipc_command import Command
 
 class IPCClient():
     def __init__(self, name="IPCClient_"+str(random.randint(1000,9999))):

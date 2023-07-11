@@ -5,7 +5,7 @@ import signal
 from flask import Flask, send_file
 from flask_socketio import SocketIO
 from ipc_server import IPCServer
-from command import Command
+from ipc_command import Command
 
 DIR = os.path.realpath(os.path.dirname(__file__))
 
