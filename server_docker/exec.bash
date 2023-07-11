@@ -1,0 +1,1 @@
+docker exec -it hri_server bash

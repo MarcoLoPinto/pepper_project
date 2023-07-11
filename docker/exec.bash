@@ -1,1 +1,1 @@
-sudo docker exec -it pepperhri tmux a
+docker exec -it pepperhri tmux a
