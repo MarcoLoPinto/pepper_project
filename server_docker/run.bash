@@ -18,12 +18,12 @@ CAMERA_DEVICE=/dev/video0
 PEPPER_TOOLS_HOME=$ROOT_PROJECT/src/Pepper/pepper_tools
 PLAYGROUND_FOLDER=$ROOT_PROJECT/playground
 
-if [ ! "$(docker network ls | grep hri_net)" ]; then
-  echo "Creating hri_net network ..."
-  docker network create hri_net
-else
-  echo "hri_net network exists"
-fi
+# if [ ! "$(docker network ls | grep hri_net)" ]; then
+#   echo "Creating hri_net network ..."
+#   docker network create hri_net
+# else
+#   echo "hri_net network exists"
+# fi
 
 echo "Running image $IMAGENAME:$VERSION ..."
 

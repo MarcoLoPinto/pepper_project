@@ -1,74 +1,118 @@
-RAIMClient = {
-    Command: null,
-    dispatchCommand: null, // Called to send a command to the server, that will forward it to all the connected ipc clients
-    executeCommand: null, // Called when a command is sent from an ipc client to this browser
-    setCommandListener: null, // Sets the callback to receive commands from the ipc clients connected,
-    debugPrint: true
+class RAIMCommand {
+    constructor({ request = true, id = Math.floor(Math.random() * 9000 + 1000), to_client_id = "0", from_client_id = "browser", data = {} }) {
+        this.request = request;
+        this.id = id
+        this.to_client_id = to_client_id;
+        this.from_client_id = from_client_id;
+        this.data = data;
+    }
+
+    serialize() {
+        return { "request": this.request, "id": this.id, "to_client_id": this.to_client_id, "from_client_id": this.from_client_id, "data": this.data };
+    }
+
+    toJson() {
+        const j_obj = this.serialize()
+        return JSON.stringify(j_obj);
+    }
+
+    toString() {
+        return this.toJson();
+    }
+
+    static fromJson(json_str) {
+        const j_obj = JSON.parse(json_str);
+        return Command.fromObject(j_obj)
+    }
+
+    static fromObject(obj) {
+        return new Command({ request: obj["request"], id: obj["id"], to_client_id: obj["to_client_id"], from_client_id: obj["from_client_id"], data: obj["data"] });
+    }
 }
 
-RAIMClient.setCommandListener = function(callback) {
-    this.executeCommand = callback
-}.bind(RAIMClient);
+class RAIMClient {
 
-(function(BlockObject){
+    static Command = RAIMCommand
 
-    function dbgLog(text){
-        if(BlockObject.debugPrint) console.log(text)
+    constructor(name = "RAIMClient_" + Math.floor(Math.random() * 9000 + 1000)) {
+        this.name = name;
+        this.generalCommandListener = null;
+        this.onConnect = null;
+        this.onDisconnect = null;
+        this.responseCallbacks = {};
+        this.socket = null;
     }
 
-    class Command {
-        constructor({request = true, to_client_id = "0", from_client_id="browser", data = {}}) {
-            this.request = request;
-            this.to_client_id = to_client_id;
-            this.from_client_id = from_client_id;
-            this.data = data;
-        }
+    connect(protocol = "ws", host = "localhost", port = 5002) {
+        let portStr = port == 0 ? "" : `:${port}`
+        this.socket = new WebSocket(`${protocol}://${host}${portStr}`);
+        this.socket.onopen = () => {
+            this.socket.send(this.name);
+            if (this.onConnect) this.onConnect();
+        };
 
-        serialize(){
-            return { "request": this.request, "to_client_id": this.to_client_id, "from_client_id": this.from_client_id, "data": this.data };            
-        }
-    
-        toJson() {
-            const j_obj = this.serialize()
-            return JSON.stringify(j_obj);
-        }
-    
-        toString() {
-            return this.toJson();
-        }
-    
-        static fromJson(json_str) {
-            const j_obj = JSON.parse(json_str);
-            return Command.fromObject(j_obj)
-        }
+        this.socket.onmessage = (event) => {
+            const jsonCommand = event.data;
+            let command = typeof jsonCommand == "string" ? Command.fromJson(jsonCommand) : Command.fromObject(jsonCommand);
+            console.log(`${this.name} received a command from ${command.from_client_id}: ${command.data}`);
+            this.__internalDispatchCommand(command);
+        };
 
-        static fromObject(obj){
-            return new Command({request:obj["request"], to_client_id:obj["to_client_id"], from_client_id:obj["from_client_id"], data:obj["data"]}); 
+        this.socket.onclose = () => {
+            if (this.onDisconnect) this.onDisconnect();
+        };
+    }
+
+    disconnect() {
+        console.log(`Disconnecting RAIM client ${this.name}...`);
+        this.socket.close();
+        this.socket = null;
+    }
+
+    __internalDispatchCommand(command) {
+        if (!command.request && this.responseCallbacks.hasOwnProperty(command.id)) {
+            const responseCallback = this.responseCallbacks[command.id];
+            delete this.responseCallbacks[command.id];
+            responseCallback(command);
+        } else if (this.generalCommandListener) {
+            this.generalCommandListener(command);
         }
     }
 
-    BlockObject.Command = Command
-
-    const socket = io();
-    dbgLog("Connected to socket server")
-
-    /**
-     * alled to send a command to the server, that will forward it to all the connected clients
-     * @param {Command} command -- Command to send
-     */
-    BlockObject.dispatchCommand = function(command){
-        if(command.from_client_id == "") command.from_client_id = "browser"
-        socket.emit('command', command.toJson());
-        dbgLog(`Sent command to ${command.to_client_id}`);
+    dispatchCommand(command, responseCallback = null) {
+        if (command.from_client_id === "") {
+            command.from_client_id = this.name;
+        }
+        if (responseCallback && command.request) {
+            this.responseCallbacks[command.id] = responseCallback;
+        }
+        this.socket.send(command.toJson());
     }
 
-    socket.on('command', (jsonCommand) => {
-        let command = typeof jsonCommand == "string" ? Command.fromJson(jsonCommand) : Command.fromObject(jsonCommand) 
-        dbgLog(`Received command from ${command.from_client_id}`);
-        if( BlockObject.executeCommand != null ){
-            BlockObject.executeCommand(command)
+    dispatchCommandPromise(command) {
+        if (command.from_client_id === "") {
+            command.from_client_id = this.name;
         }
-    });
 
+        return new Promise((resolve, reject) => {
 
-})(RAIMClient);
+            if (command.request) {
+                this.responseCallbacks[command.id] = (command) => {
+                    resolve(command)
+                };
+            }
+
+            try {
+                this.socket.send(command.toJson());
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    setCommandListener(callback) {
+        this.generalCommandListener = callback;
+    }
+
+    
+}

@@ -4,8 +4,9 @@ import sys
 import signal
 from flask import Flask, send_file
 from flask_socketio import SocketIO
-from ipc_server import IPCServer
-from command import Command
+from .ipc_server import IPCServer
+from .websocket_server import WebsocketServer
+from .raim_command import Command
 
 DIR = os.path.realpath(os.path.dirname(__file__))
 
@@ -15,7 +16,13 @@ class RAIMServer:
         template_dir = os.path.abspath('pages')
         self.app = Flask(__name__, template_folder=template_dir)
         self.socketio = SocketIO(self.app)
-        self.ipc = IPCServer()
+        self.modules = [IPCServer(),WebsocketServer()]
+
+        for i in range(len(self.modules)):
+            current_module = self.modules[i]
+            rest_of_modules = [mod for j, mod in enumerate(self.modules) if j != i]
+            for mod in rest_of_modules:
+                current_module.add_dispatch_to_module_fn(mod.dispatch_command)
         
         @self.app.route("/")
         def index():
@@ -28,23 +35,18 @@ class RAIMServer:
                 return send_file(path)
             else:
                 return "Error 404, Not Found", 404
-        
-        @self.socketio.on('command')
-        def command_from_browser(command_json: str):
-            command = Command.fromJson(command_json)
-            self.ipc.dispatch_command(command)
-
-        # executed when a client sends a request
-        self.ipc.set_fn_send_command_to_browser(lambda c: self.send_command_to_browser(c))
-
-    def send_command_to_browser(self, command: Command):
-        self.socketio.emit("command",command.serialize())
 
     def run(self,port=5000):
-        print(f"Running ipc server on port 0.0.0.0:{port+1} ...")
-        self.ipc.run(port+1)
-        print(f"Running http server on port localhost:{port} ...")
+        for i, mod in enumerate(self.modules):
+            print(f"Running {mod.module_name} module on port {port+1} ...")
+            mod.run(port+i+1)
+
+        print(f"Running http server on 0.0.0.0:{port} ...")
         self.socketio.run(self.app, port=port)
+    
+    def disconnect_modules(self):
+        for mod in self.modules:
+            mod.disconnect()
 
 if __name__ == "__main__":
     port = 5000
@@ -54,4 +56,4 @@ if __name__ == "__main__":
         app = RAIMServer()
         app.run(port=port)
     except KeyboardInterrupt:
-        app.ipc.disconnect()
+        app.disconnect_modules()

@@ -3,7 +3,7 @@ import signal
 from pepperbot.PepperBot import PepperBot
 import pepperbot.PepperMotions as motions
 from RAIM.ipc_client import IPCClient
-from RAIM.command import Command
+from RAIM.raim_command import Command
 
 pepper_port = 34097
 server_port = 5001

@@ -12,12 +12,12 @@ fi
 current_dir="$(dirname "$(realpath "$0")")"
 config_dir="$current_dir/swag_config"
 
-if [ ! "$(docker network ls | grep hri_net)" ]; then
-  echo "Creating hri_net network ..."
-  docker network create hri_net
-else
-  echo "hri_net network exists"
-fi
+# if [ ! "$(docker network ls | grep hri_net)" ]; then
+#   echo "Creating hri_net network ..."
+#   docker network create hri_net
+# else
+#   echo "hri_net network exists"
+# fi
 
 
 docker run -d\
@@ -28,7 +28,7 @@ docker run -d\
   -e PGID=1000 \
   -e TZ=Europe/London \
   -e URL=hriproject.duckdns.org \
-  -e SUBDOMAINS=www, \
+  -e SUBDOMAINS=www,websocket, \
   -e VALIDATION=http \
   -e DUCKDNSTOKEN="$DUCKDNSTOKEN" \
   -v "$config_dir":/config \
