@@ -7,6 +7,8 @@ import time
 import threading
 
 from PIL import Image
+import io
+import base64
 import socket
 
 class PepperBot:
@@ -335,6 +337,46 @@ class PepperBot:
         # Create a PIL Image from our pixel array.
         imx = Image.frombytes("RGB", (imageWidth, imageHeight), imageArray)
         return imx
+    
+    def getCameraImageArray(self):
+        if not hasattr(self, 'robotCameraEvent') or self.robotCameraEvent == None:
+            self._log_error("The startVideoFrameGrabberEvent was never called! Start it first!")
+            return None
+
+        img = self.services['ALVideoDevice'].getImageRemote(self.robotCameraEvent)
+        if img is None:
+            self._log_error("Cannot get the image from the startVideoFrameGrabberEvent!")
+            return None
+        
+        imageWidth = img[0]
+        imageHeight = img[1]
+        imageArray = img[6]
+
+        return imageArray, (imageWidth, imageHeight)
+    
+    def getCameraImageBase64(self):
+        if not hasattr(self, 'robotCameraEvent') or self.robotCameraEvent == None:
+            self._log_error("The startVideoFrameGrabberEvent was never called! Start it first!")
+            return None
+
+        img = self.services['ALVideoDevice'].getImageRemote(self.robotCameraEvent)
+        if img is None:
+            self._log_error("Cannot get the image from the startVideoFrameGrabberEvent!")
+            return None
+        
+        imageWidth = img[0]
+        imageHeight = img[1]
+        imageArray = img[6]
+
+        # Create a PIL Image from our pixel array.
+        imx = Image.frombytes("RGB", (imageWidth, imageHeight), imageArray)
+
+        # Convert the PIL Image to a base64 encoded string
+        buffered = io.BytesIO()
+        imx.save(buffered, format="JPEG")
+        encoded_img = base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+        return encoded_img
     
     def saveCameraImage(self, filepath):
         imx = self.getCameraImage()
