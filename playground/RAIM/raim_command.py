@@ -9,8 +9,18 @@ class Command():
         self.to_client_id = to_client_id
         self.from_client_id = from_client_id
         self.data = data
-        self.is_successful = is_successful # In order to standardize the response from the server, useful when making the response command!
+        self.is_successful = is_successful # Refering to a response only. Indicates if the request is succesful and this is a ack response otherwise a nack
     
+    def gen_response(self, is_successful = True, data = {}, to_client_id = None, from_client_id = None, request = False):
+        return Command(
+            request=request,
+            id=self.id,
+            to_client_id=to_client_id if to_client_id is not None else self.from_client_id,
+            from_client_id=from_client_id if from_client_id is not None else self.to_client_id,
+            data=data,
+            is_successful=is_successful
+        )
+
     def serialize(self):
         return {
             "request": self.request, 
@@ -20,16 +30,6 @@ class Command():
             "data": self.data, 
             "is_successful": self.is_successful
         }
-    
-    def make_response(self, is_successful, data = {}, to_client_id = None, from_client_id = None, request = False):
-        return Command(
-            request=request,
-            id=self.id,
-            to_client_id=to_client_id if to_client_id is not None else self.from_client_id,
-            from_client_id=from_client_id if from_client_id is not None else self.to_client_id,
-            data=data,
-            is_successful=is_successful
-        )
     
     def toJson(self):
         j_obj = self.serialize()

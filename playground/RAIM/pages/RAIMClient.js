@@ -9,16 +9,28 @@ function generateUUID() {
 
 
 class RAIMCommand {
-    constructor({ request = false, id = generateUUID(), to_client_id = "0", from_client_id = "browser", data = {} }) {
+    constructor({ request = false, id = generateUUID(), to_client_id = "0", from_client_id = "browser", data = {}, is_successful = true }) {
         this.request = request;
         this.id = id
         this.to_client_id = to_client_id;
         this.from_client_id = from_client_id;
         this.data = data;
+        this.is_successful = is_successful
+    }
+
+    genResponse({is_successful = true, data = {}, to_client_id = null, from_client_id = null, request = false}){
+        return new RAIMCommand({
+            request: request,
+            id: this.id,
+            to_client_id: to_client_id != null ? to_client_id : this.from_client_id,
+            from_client_id: from_client_id != null ? from_client_id : this.to_client_id,
+            data: data,
+            is_successful: is_successful
+        })
     }
 
     serialize() {
-        return { "request": this.request, "id": this.id, "to_client_id": this.to_client_id, "from_client_id": this.from_client_id, "data": this.data };
+        return { "request": this.request, "id": this.id, "to_client_id": this.to_client_id, "from_client_id": this.from_client_id, "data": this.data, "is_successful": this.is_successful };
     }
 
     toJson() {
@@ -36,7 +48,7 @@ class RAIMCommand {
     }
 
     static fromObject(obj) {
-        return new RAIMCommand({ request: obj["request"], id: obj["id"], to_client_id: obj["to_client_id"], from_client_id: obj["from_client_id"], data: obj["data"] });
+        return new RAIMCommand({ request: obj["request"], id: obj["id"], to_client_id: obj["to_client_id"], from_client_id: obj["from_client_id"], data: obj["data"], is_successful: obj["is_successful"] });
     }
 }
 
@@ -90,7 +102,7 @@ class RAIMClient {
     }
 
     __internalHandleReceivedCommand(command) {
-        if (!command.request && this.responseCallbacks.hasOwnProperty(command.id)) {
+        if (this.responseCallbacks.hasOwnProperty(command.id)) {
             const responseCallback = this.responseCallbacks[command.id];
             delete this.responseCallbacks[command.id];
             responseCallback(command);
@@ -110,9 +122,10 @@ class RAIMClient {
         return new Promise((resolve, reject) => {
 
             if (command.request) {
-                this.responseCallbacks[command.id] = (command) => {
-                    if (responseCallback) responseCallback(command)
-                    resolve(command)
+                this.responseCallbacks[command.id] = (responseCommand) => {
+                    if (responseCallback) responseCallback(responseCommand)
+                    if(responseCommand.is_successful) resolve(responseCommand)
+                    else reject(responseCommand)
                 };
             }
 

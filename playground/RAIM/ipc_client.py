@@ -55,7 +55,7 @@ class IPCClient():
         """
         Internal function to check wheter this command is a response or is request/standalone command from another client
         """
-        if command.request == False and command.id in self.response_callbacks:
+        if command.id in self.response_callbacks:
             response_callback = self.response_callbacks.pop(command.id)
             response_callback(command)
         elif self.general_command_listener != None:
