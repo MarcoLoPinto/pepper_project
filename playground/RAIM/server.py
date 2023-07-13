@@ -12,8 +12,7 @@ DIR = os.path.realpath(os.path.dirname(__file__))
 # Rich Advanced Interaction Manager
 class RAIMServer:
     def __init__(self):
-        template_dir = os.path.abspath('pages')
-        self.app = Flask(__name__, template_folder=template_dir)
+        self.app = Flask(__name__)
         self.modules = [IPCServer(),WebsocketServer()]
 
         for i in range(len(self.modules)):
@@ -40,7 +39,7 @@ class RAIMServer:
             mod.run(port+i+1)
 
         print(f"Running http server on 0.0.0.0:{port} ...")
-        self.app.run(self.app, port=port)
+        self.app.run(port=port)
     
     def disconnect_modules(self):
         for mod in self.modules:
