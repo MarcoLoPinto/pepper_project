@@ -3,23 +3,32 @@ import json
 import uuid
 
 class Command():
-    def __init__(self, request=False, id=str(uuid.uuid4()), to_client_id="0", from_client_id="", data={}):
+    def __init__(self, request=False, id=str(uuid.uuid4()), to_client_id="0", from_client_id="", data={}, is_successful = True):
         self.request = request # If this is true, then the client will expect a response. If is false, this is either e standalone command or a response
         self.id = id
         self.to_client_id = to_client_id
         self.from_client_id = from_client_id
         self.data = data
+        self.is_successful = is_successful # In order to standardize the response from the server, useful when making the response command!
     
     def serialize(self):
-        return {"request": self.request, "id": self.id, "to_client_id": self.to_client_id, "from_client_id": self.from_client_id, "data":self.data}
+        return {
+            "request": self.request, 
+            "id": self.id, 
+            "to_client_id": self.to_client_id, 
+            "from_client_id": self.from_client_id, 
+            "data": self.data, 
+            "is_successful": self.is_successful
+        }
     
-    def make_response(self, data = {}, to_client_id = None, from_client_id = None, request = False):
+    def make_response(self, is_successful, data = {}, to_client_id = None, from_client_id = None, request = False):
         return Command(
             request=request,
             id=self.id,
             to_client_id=to_client_id if to_client_id is not None else self.from_client_id,
             from_client_id=from_client_id if from_client_id is not None else self.to_client_id,
-            data=data
+            data=data,
+            is_successful=is_successful
         )
     
     def toJson(self):
@@ -33,7 +42,14 @@ class Command():
     @classmethod
     def fromJson(cls, json_str):
         j_obj = json.loads(json_str)
-        return cls(request=j_obj["request"], id=j_obj["id"], to_client_id=j_obj["to_client_id"], from_client_id=j_obj["from_client_id"], data=j_obj["data"])
+        return cls(
+            request=j_obj["request"], 
+            id=j_obj["id"], 
+            to_client_id=j_obj["to_client_id"], 
+            from_client_id=j_obj["from_client_id"], 
+            data=j_obj["data"],
+            is_successful=j_obj["is_successful"],
+        )
 
     def toBytes(self):
         return str(self).encode("utf-8")
