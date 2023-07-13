@@ -9,7 +9,7 @@ function generateUUID() {
 
 
 class RAIMCommand {
-    constructor({ request = true, id = generateUUID(), to_client_id = "0", from_client_id = "browser", data = {} }) {
+    constructor({ request = false, id = generateUUID(), to_client_id = "0", from_client_id = "browser", data = {} }) {
         this.request = request;
         this.id = id
         this.to_client_id = to_client_id;
