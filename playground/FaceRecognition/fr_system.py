@@ -156,10 +156,14 @@ class FaceRecognition:
             # Create standard output for face that exists but we don't know anything
             name, confidence = 'Unknown', 0.0
 
-            face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
-            best_match_idx = np.argmin(face_distances)
+            best_match_idx = None
+            try:
+                face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+                best_match_idx = np.argmin(face_distances)
+            except:
+                pass
 
-            if matches[best_match_idx]:
+            if best_match_idx != None and matches[best_match_idx]:
                 # Adding face to known faces in this frame
                 name = self.known_face_names[best_match_idx]
                 confidence = face_confidence(face_distances[best_match_idx])

@@ -13,6 +13,15 @@ class Command():
     def serialize(self):
         return {"request": self.request, "id": self.id, "to_client_id": self.to_client_id, "from_client_id": self.from_client_id, "data":self.data}
     
+    def make_response(self, data = {}, to_client_id = None, from_client_id = None, request = False):
+        return Command(
+            request=request,
+            id=self.id,
+            to_client_id=to_client_id if to_client_id is not None else self.from_client_id,
+            from_client_id=from_client_id if from_client_id is not None else self.to_client_id,
+            data=data
+        )
+    
     def toJson(self):
         j_obj = self.serialize()
         return json.dumps(j_obj)

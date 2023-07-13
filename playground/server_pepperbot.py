@@ -1,6 +1,6 @@
 import os, sys
 from RAIM.ipc_client import IPCClient
-from RAIM.ipc_command import Command
+from RAIM.raim_command import Command
 
 from pepperbot.PepperBot import PepperBot
 import pepperbot.PepperMotions as motions

@@ -1,7 +1,7 @@
 import os, sys
 from FaceRecognition.fr_system import FaceRecognition
 from RAIM.ipc_client import IPCClient
-from RAIM.ipc_command import Command
+from RAIM.raim_command import Command
 
 import argparse
 
@@ -50,6 +50,7 @@ class FaceRecognitionServer:
             # Update the database of informations
             self.face_recognition.UNKNOWN_FACE_THRESHOLD = int(action_properties["value"])
             print("Setting unknown threshold to:", int(action_properties["value"]))
+            
 
         elif action_type == "quit":
             self.shutdown()
