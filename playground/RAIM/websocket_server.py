@@ -31,7 +31,7 @@ class WebsocketServer():
             self.server = server
             server.serve_forever()
             
-    def receive_command(self, client_sock: websockets.sync.server.ServerConnection, client_name: str):
+    def receive_command(self, client_sock: websockets.sync.server.ServerConnection):
         """
         Loop that waits and accepts requests and responses from a websocket client
         """
@@ -48,6 +48,7 @@ class WebsocketServer():
             while True:
                 data = client_sock.recv()
                 command = Command.fromJson(data)
+                print(f"Command ({command.id} | request:{command.request}) received by Websocket module, from {command.from_client_id}, to {command.to_client_id}: {command.data}")
                 self.dispatch_command(command, primary_dispatch = True)
         except:
             print(f"{client_name} disconnected from Websocket module")
@@ -61,7 +62,6 @@ class WebsocketServer():
         If this is a primary dispatch, all the attached modules should be called
         Return whether the dispatch has been executed by this or any other modules
         """
-        if primary_dispatch: print(f"Command received by Websocket module, from {command.from_client_id}, to {command.to_client_id}: {command.data}")
 
         # When the client_id is 0, the command is broadcasted
         if command.to_client_id == "0":

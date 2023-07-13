@@ -19,7 +19,7 @@ class RAIMModule():
     def wait_for_connection(self):
         pass
             
-    def receive_command(self, client_sock: socket.socket, client_name: str):
+    def receive_command(self, client_sock: socket.socket):
         """
         Loop that waits and accepts requests and responses from the clients
         """

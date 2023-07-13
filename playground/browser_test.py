@@ -27,9 +27,14 @@ def speak(command):
     msg = msg.encode("ascii","replace")
     robot.say(msg, speed=60)
     if msg == "BYE":
+        command = Command(data={"response": "The talking robot won't talk anymore..."}, to_client_id=command.from_client_id, request=False, id=command.id)
+        ipc.dispatch_command(command)
         shutdown()
-    if msg == "TOUCH":
-        command = Command(data={"msg": "full duplex test"}, to_client_id="browser")
+    if msg == "BACK2":
+        command = Command(data={"response": "Response test"}, to_client_id=command.from_client_id, request=False, id=command.id)
+        ipc.dispatch_command(command)
+    if msg == "BACK":
+        command = Command(data={"msg": "Full duplex test"}, to_client_id=command.from_client_id)
         ipc.dispatch_command(command)
 
 ipc.set_command_listener(speak)

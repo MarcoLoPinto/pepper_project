@@ -1,8 +1,9 @@
 import random
 import json
+import uuid
 
 class Command():
-    def __init__(self, request=True, id=random.randint(10000,99999), to_client_id="0", from_client_id="", data={}):
+    def __init__(self, request=True, id=str(uuid.uuid4()), to_client_id="0", from_client_id="", data={}):
         self.request = request # If this is true, then the client will expect a response. If is false, this is either e standalone command or a response
         self.id = id
         self.to_client_id = to_client_id

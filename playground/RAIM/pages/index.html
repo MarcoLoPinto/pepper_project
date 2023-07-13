@@ -33,7 +33,7 @@
     }
 
     input[type="text"] {
-      width: 300px;
+      width: 400px;
       height: 30px;
       padding: 5px;
       margin-bottom: 10px;
@@ -62,6 +62,13 @@
     #bye-btn:hover {
       background-color: rgb(156, 42, 42);
     }
+    
+    #response-btn {
+      background-color: blue;
+    }
+    #response-btn:hover {
+      background-color: rgb(2, 2, 163);
+    }
   </style>
 </head>
 <body>
@@ -71,6 +78,7 @@
         <input type="text" placeholder="Enter your message" id="message-input">
         <div class="buttons-box">
           <button type="submit" id="send-btn">Send</button>
+          <button id="response-btn">Response</button>
           <button id="bye-btn">Close</button>
         </div>
       </form>

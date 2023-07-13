@@ -40,22 +40,23 @@ class IPCServer():
                 break
             try:
                 client_sock, addr = self.sock.accept()
-                # addr = f"{addr[0]}:{addr[1]}"
-                client_name = client_sock.recv(1024).decode("utf-8")
-                if not client_name:
-                    continue
-                with self.sockets_lock:
-                    self.client_sockets[client_name] = client_sock
-                t = threading.Thread(target=self.receive_command, args=[client_sock, client_name])
+                t = threading.Thread(target=self.receive_command, args=[client_sock])
                 t.start()
-                print(f"{client_name} connected to IPC module")
             except Exception as e:
                 continue
             
-    def receive_command(self, client_sock: socket.socket, client_name: str):
+    def receive_command(self, client_sock: socket.socket):
         """
         Loop that waits and accepts requests and responses from the ipc clients
         """
+        client_name = client_sock.recv(1024).decode("utf-8")
+        if not client_name:
+            return
+        with self.sockets_lock:
+            self.client_sockets[client_name] = client_sock
+
+        print(f"{client_name} connected to IPC module")
+
         full_data = ""
         while True:
             data = client_sock.recv(1024)
@@ -75,6 +76,7 @@ class IPCServer():
                 full_data = full_data[:-2]
                 command = Command.fromJson(full_data)
                 full_data = ""
+                print(f"Command ({command.id} | request:{command.request}) received by IPC module, from {command.from_client_id}, to {command.to_client_id}: {command.data}")
                 self.dispatch_command(command, primary_dispatch=True)
 
     def dispatch_command(self, command: Command, primary_dispatch: bool = False) -> bool:
@@ -83,7 +85,6 @@ class IPCServer():
         If this is a primary dispatch, all the attached modules should be called
         Return whether the dispatch has been executed by this or any other modules
         """
-        if primary_dispatch: print(f"Command received by IPC module, from {command.from_client_id}, to {command.to_client_id}: {command.data}")
 
         # When the client_id is 0, the command is broadcasted
         if command.to_client_id == "0":

@@ -1,5 +1,15 @@
+function generateUUID() {
+    let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+    return uuid;
+}
+
+
 class RAIMCommand {
-    constructor({ request = true, id = Math.floor(Math.random() * 9000 + 1000), to_client_id = "0", from_client_id = "browser", data = {} }) {
+    constructor({ request = true, id = generateUUID(), to_client_id = "0", from_client_id = "browser", data = {} }) {
         this.request = request;
         this.id = id
         this.to_client_id = to_client_id;
@@ -22,11 +32,11 @@ class RAIMCommand {
 
     static fromJson(json_str) {
         const j_obj = JSON.parse(json_str);
-        return Command.fromObject(j_obj)
+        return RAIMCommand.fromObject(j_obj)
     }
 
     static fromObject(obj) {
-        return new Command({ request: obj["request"], id: obj["id"], to_client_id: obj["to_client_id"], from_client_id: obj["from_client_id"], data: obj["data"] });
+        return new RAIMCommand({ request: obj["request"], id: obj["id"], to_client_id: obj["to_client_id"], from_client_id: obj["from_client_id"], data: obj["data"] });
     }
 }
 
@@ -41,26 +51,36 @@ class RAIMClient {
         this.onDisconnect = null;
         this.responseCallbacks = {};
         this.socket = null;
+        this.debug = true;
+    }
+
+    print(text) {
+        if (this.debug) console.log(text)
     }
 
     connect(protocol = "ws", host = "localhost", port = 5002) {
         let portStr = port == 0 ? "" : `:${port}`
         this.socket = new WebSocket(`${protocol}://${host}${portStr}`);
-        this.socket.onopen = () => {
-            this.socket.send(this.name);
-            if (this.onConnect) this.onConnect();
-        };
 
-        this.socket.onmessage = (event) => {
-            const jsonCommand = event.data;
-            let command = typeof jsonCommand == "string" ? Command.fromJson(jsonCommand) : Command.fromObject(jsonCommand);
-            console.log(`${this.name} received a command from ${command.from_client_id}: ${command.data}`);
-            this.__internalDispatchCommand(command);
-        };
+        return new Promise((resolve, reject) => {
 
-        this.socket.onclose = () => {
-            if (this.onDisconnect) this.onDisconnect();
-        };
+            this.socket.onopen = () => {
+                this.socket.send(this.name);
+                if (this.onConnect) this.onConnect();
+                resolve()
+            };
+
+            this.socket.onmessage = (event) => {
+                const jsonCommand = event.data;
+                let command = typeof jsonCommand == "string" ? RAIMCommand.fromJson(jsonCommand) : RAIMCommand.fromObject(jsonCommand);
+                this.print(`${this.name} received a command from ${command.from_client_id}: ${JSON.stringify(command.data)}`);
+                this.__internalHandleReceivedCommand(command);
+            };
+
+            this.socket.onclose = () => {
+                if (this.onDisconnect) this.onDisconnect();
+            };
+        })
     }
 
     disconnect() {
@@ -69,7 +89,7 @@ class RAIMClient {
         this.socket = null;
     }
 
-    __internalDispatchCommand(command) {
+    __internalHandleReceivedCommand(command) {
         if (!command.request && this.responseCallbacks.hasOwnProperty(command.id)) {
             const responseCallback = this.responseCallbacks[command.id];
             delete this.responseCallbacks[command.id];
@@ -80,16 +100,9 @@ class RAIMClient {
     }
 
     dispatchCommand(command, responseCallback = null) {
-        if (command.from_client_id === "") {
-            command.from_client_id = this.name;
-        }
-        if (responseCallback && command.request) {
-            this.responseCallbacks[command.id] = responseCallback;
-        }
-        this.socket.send(command.toJson());
-    }
-
-    dispatchCommandPromise(command) {
+        /**
+         * The then() callback is a function that gets the response command back
+         */
         if (command.from_client_id === "") {
             command.from_client_id = this.name;
         }
@@ -98,21 +111,39 @@ class RAIMClient {
 
             if (command.request) {
                 this.responseCallbacks[command.id] = (command) => {
+                    if (responseCallback) responseCallback(command)
                     resolve(command)
                 };
             }
 
             try {
                 this.socket.send(command.toJson());
+                this.print(`${this.name} sent a command to ${command.to_client_id}: ${JSON.stringify(command.data)}`);
             } catch (error) {
                 reject(error);
             }
         });
     }
 
+    // Retrocompatibility call. Uncomment if needed
+    // dispatchCommandPromise(command){
+    //     return this.dispatchCommand(command)
+    // }
+
     setCommandListener(callback) {
         this.generalCommandListener = callback;
     }
 
-    
+
+}
+
+function RAIMgetWebsocketUrlParams() {
+    let domain = window.location.hostname
+    let protocol = window.location.protocol === "https:" ? "wss" : "ws"
+    if (domain == "localhost") {
+        return [protocol, "localhost", Number(window.location.port) + 2]
+    }
+    else {
+        return [protocol, "websocket." + domain, 0]
+    }
 }
