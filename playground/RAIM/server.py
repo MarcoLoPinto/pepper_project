@@ -4,9 +4,9 @@ import sys
 import signal
 from flask import Flask, send_file
 from flask_socketio import SocketIO
-from .ipc_server import IPCServer
-from .websocket_server import WebsocketServer
-from .raim_command import Command
+from ipc_server import IPCServer
+from websocket_server import WebsocketServer
+from raim_command import Command
 
 DIR = os.path.realpath(os.path.dirname(__file__))
 

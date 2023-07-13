@@ -27,7 +27,7 @@ class IPCClient():
         """
         Disconnects this client from the server
         """
-        print(f"Disconnecting IPC client {self.name}...")
+        print("Disconnecting IPC client %s..." %(self.name))
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
         if self.t != None: self.t = None
@@ -48,7 +48,7 @@ class IPCClient():
                 full_data = full_data[:-2]
                 command = Command.fromJson(full_data)
                 full_data = ""
-                print(f"{self.name} received a command from {command.from_client_id}: {command.data}")
+                print("%s received a command from %s: %s" %(self.name, command.from_client_id, command.data))
                 self.__internal_dispatch_command(command)
     
     def __internal_dispatch_command(self, command):

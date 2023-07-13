@@ -114,7 +114,7 @@ class FaceRecognition:
         array_data = np.frombuffer(binary_data, np.uint8)
         # Decode the NumPy array to an OpenCV image
         cv2_image = cv2.imdecode(array_data, cv2.IMREAD_COLOR)
-        return cv2.cvtColor(cv2_image, cv2.COLOR_BGR2RGB)
+        return cv2_image
     
     def cv2_to_base64(self, image: np.ndarray):
         """Converts the openCV image to a base64 encoded image 
@@ -140,6 +140,7 @@ class FaceRecognition:
             if cv2_rgb is None: return {"error": "empty_buffer"}
             else: self.frame = cv2_rgb
         rgb_small_frame = cv2.resize(self.frame, (0,0), fx=1.0/self.RESIZE_VALUE, fy=1.0/self.RESIZE_VALUE)
+        # rgb_small_frame = cv2.cvtColor(rgb_small_frame, cv2.COLOR_BGR2RGB) # bgr -> rgb
         # rgb_small_frame = rgb_small_frame[:,:,::-1] # bgr -> rgb
 
         # Resetting these values each frame
@@ -171,8 +172,14 @@ class FaceRecognition:
                 if i in self.possible_unknown_faces:
                     self.possible_unknown_faces[i] += 1
                     if self.possible_unknown_faces[i] >= self.UNKNOWN_FACE_THRESHOLD:
+                        self.possible_unknown_faces[i] = self.UNKNOWN_FACE_THRESHOLD+1
                         self.unknown_faces[i] = True
-                else: self.possible_unknown_faces[i] = 1
+                else: 
+                    self.possible_unknown_faces[i] = 1
+                
+        for i in self.possible_unknown_faces.keys():
+            if i not in range(len(self.face_encodings)):
+                self.possible_unknown_faces[i] = 1
 
         return {"known_faces": self.known_faces, "cropped_unknown_faces": self.get_cropped_unknown_faces()}
     

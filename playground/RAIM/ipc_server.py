@@ -3,7 +3,7 @@
 
 import socket
 import threading
-from .raim_command import Command
+from raim_command import Command
 
 class IPCServer():
     def __init__(self) -> None:

@@ -6,25 +6,33 @@
 </head>
 
 <body>
-    <div id="camera-selection-page">
-        <h1>Select Camera:</h1>
+    <div id="index_page">
+        <h1>Selection of chosen one:</h1>
         <select id="camera-list"></select>
         <button id="connect-button">Connect</button>
         <br>
+        <!-- Video captured from camera of the PC/stablet -->
         <video id="video" autoplay></video>
+        <!-- Video captured from camera of the PC/stablet -->
+        <img id="video_back" />
         <br>
-        <label id="debug"></label>
+        <label id="debugOutput"></label>
     </div>
 
-    <div id="explanation-page">
+    <div id="new_face_page">
+        <h1>New face detected:</h1>
+        <img id="cropped_unk_face" />
+        <label id="cropped_unk_face_text"></label>
+    </div>
+
+    <div id="explanation_page">
 
     </div>
 
-    <div id="prp-page">
+    <div id="prp_page">
         
     </div>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <script src="/config.js" defer></script>
     <script src="/RAIMClient.js" defer></script>
     <script src="/new_index.js" defer></script>

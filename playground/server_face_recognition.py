@@ -25,6 +25,7 @@ class FaceRecognitionServer:
     def fr_perform_action(self, command_in, action):
         action_type = action["action_type"]
         action_properties = None if "action_properties" not in action else action["action_properties"]
+        
         if action_type == "run_recognition_frame":
             # Run the recognition
             fr_data = self.face_recognition.run_recognition_frame(action_properties["img"])
@@ -34,6 +35,7 @@ class FaceRecognitionServer:
                 to_client_id=command_in.from_client_id
             )
             self.ipc.dispatch_command(command_out)
+
         elif action_type == "set_unknown_faces":
             # Update the database of informations
             self.face_recognition.run_recognition_frame(action_properties["img"])
@@ -43,6 +45,12 @@ class FaceRecognitionServer:
                 to_client_id=command_in.from_client_id
             )
             self.ipc.dispatch_command(command_out)
+
+        elif action_type == "set_unknown_face_threshold":
+            # Update the database of informations
+            self.face_recognition.UNKNOWN_FACE_THRESHOLD = int(action_properties["value"])
+            print("Setting unknown threshold to:", int(action_properties["value"]))
+
         elif action_type == "quit":
             self.shutdown()
 

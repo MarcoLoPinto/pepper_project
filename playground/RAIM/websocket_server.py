@@ -1,6 +1,7 @@
 import websockets
 import threading
-from .raim_command import Command
+from raim_command import Command
+from websockets.sync.server import serve
 
 class WebsocketServer():
     def __init__(self) -> None:
