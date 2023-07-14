@@ -8,13 +8,13 @@ class Routing {
         const bodyDivs = divs.filter(div => div.parentNode === body);
         // Extract the IDs of the body divs into a new array
         this.routes = bodyDivs.map(div => div.id);
-        
+
         this.route = undefined;
         this.history = [];
         this.goToPage(startingPage);
     }
     goToPage(page) {
-        if(this.route == page) return;
+        if (this.route == page) return;
         for (let p of this.routes) {
             let element = document.getElementById(p);
             element.style.display = 'none';
@@ -33,7 +33,7 @@ class Routing {
     }
 
     addToHistory(element) {
-        if(this.history.length >= this.routes) this.history.shift();
+        if (this.history.length >= this.routes.length) this.history.shift();
         this.history.push(element);
     }
 
@@ -97,20 +97,60 @@ class SpeechRecognitionBrowser {
 }
 
 class LanguageText {
-    constructor(lang, textMapping) {
+    constructor(lang, textMapping, onChange = ()=>{}) {
         this.lang = lang;
         this.textMapping = textMapping;
         this.defaultlang = "en-US";
+
+        let createDropDown = true;
+        if(createDropDown) {
+            // Create the select element
+            var dropdown = document.createElement("select");
+            dropdown.setAttribute("id", "languageTextDropdown");
+
+            let languages = this.extractLanguages();
+
+            for(let l of languages) {
+                // Create the options
+                let option = document.createElement("option");
+                option.setAttribute("value", l);
+                option.textContent = l;
+                dropdown.appendChild(option);
+            }
+
+            // Add the dropdown to the page
+            document.body.appendChild(dropdown);
+
+            // Add the onchange event listener
+            dropdown.addEventListener("change", () => {
+                var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+                this.lang = selectedValue;
+                onChange(this.lang);
+            });
+        }
     }
+
     get(name) {
         if (!(name in this.textMapping)) throw `${name} not present in the vocabulary!`
         if (!(this.lang in this.textMapping[name])) throw `${this.lang} not present in the ${name} vocabulary!`
         return this.textMapping[name][this.lang];
     }
+
+    extractLanguages() {
+        const languages = new Set();
+
+        for (const key in this.textMapping) {
+            const languageKeys = Object.keys(this.textMapping[key]);
+            languageKeys.forEach((key) => languages.add(key));
+        }
+
+        return Array.from(languages);
+    }
+
 }
 
 class BetterConsole {
-    constructor({enabled = true}) {
+    constructor({ enabled = true }) {
         this.enabled = enabled;
     }
 

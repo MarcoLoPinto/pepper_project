@@ -22,20 +22,34 @@ class PepperBrowser {
         this.initState(); // Initial state of the machine
 
         // Logger
-        this.console = new BetterConsole({enabled: debug})
-        // language
-        this.languageText = new LanguageText(lang, {
-            "YES": {
-                "en-US": "yes",
-                "it-IT": "si"
-            },
-            "NO": {
-                "en-US": "no",
-                "it-IT": "no"
-            }
-        });
+        this.console = new BetterConsole({enabled: debug});
         // Speech-to-text service
         this.stt = new SpeechRecognitionBrowser(lang);
+        // language
+        this.languageText = new LanguageText(
+            lang, 
+            {
+                "YES": {
+                    "en-US": "yes",
+                    "it-IT": "si"
+                },
+                "NO": {
+                    "en-US": "no",
+                    "it-IT": "no"
+                },
+                "PEPPER_LOST_CHOSEN_ONE": {
+                    "en-US": "Oh no, I lost you. Come back whenever you want!",
+                    "it-IT": "Oh no, ti ho perso di vista. Ritorna quando vuoi!"
+                },
+                "PEPPER_EXPERT_USER_INTRO": {
+                    "en-US": "Hello again %s! Do you want that I explain again the game?",
+                    "it-IT": "Ciao di nuovo %s! Vuoi che ti spieghi di nuovo il gioco?"
+                }
+            },
+            (lang) => {
+                this.stt.recognition.lang = lang;
+            }
+        );
 
         this.console.log("Chosen min_ms_time:", min_ms_interval, "Chosen camera:", camera_type)
 
@@ -220,7 +234,10 @@ class PepperBrowser {
 
     sendFrameCameraBrowserRequest() {
         let command = new RAIMClient.Command({
-            data: { "img": this.getFrameCameraBrowser() },
+            data: { 
+                "action_type": "take_video_frame", 
+                "action_properties": { "img": this.getFrameCameraBrowser() } 
+            },
             to_client_id: "browser"
         });
         return this.RAIMClient.dispatchCommand(command);
@@ -271,9 +288,10 @@ class PepperBrowser {
                 command.from_client_id == "pepper" ||
                 command.from_client_id == "browser"
             ) && (
-                "img" in command.data
+                "action_properties" in command.data &&
+                "img" in command.data["action_properties"]
             )
-        ) this.sendFrameToFaceRecognition(command.data["img"]);
+        ) this.sendFrameToFaceRecognition(command.data["action_properties"]["img"]);
         else return;
     }
 
@@ -289,6 +307,14 @@ class PepperBrowser {
                     // TODO: choose how to reset: we reload the page or run an init again? Reload is easier but the page needs to reload correctly!
                     this.state.chosen_one = undefined;
                     this.state.is_chosen_one_new = false;
+                    // Inform the user that we lost it:
+                    let command_out = await this.robotSayMove({
+                        action_type:"say_move",
+                        text: this.languageText.get("PEPPER_LOST_CHOSEN_ONE"),
+                        move_name: "fancyRightArmCircle",
+                        request: true
+                    })
+                    this.console.log("Pepper lost the chosen one!")
                 }
             }
             else {
@@ -296,8 +322,8 @@ class PepperBrowser {
                     let chosen_one = known_faces_names[0];
                     this.state.chosen_one = known_faces_names[0];
                     if(this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
-                    if(this.state.is_chosen_one_new) this.explainGameToUser();
-                    else this.talkToExpertUser();
+                    if(this.state.is_chosen_one_new) await this.talkToNewUser();
+                    else await this.talkToExpertUser();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
                     // No known face, but there is someone that the robot does not know!
@@ -378,12 +404,54 @@ class PepperBrowser {
 
     }
 
-    talkToExpertUser() {
-        // TODO: This user has already played check if user wants an explanation!
+    robotSayMove({action_type, text, move_name, request}) {
+        let command_in = new RAIMClient.Command({
+            data: {
+                "actions": [{ 
+                    "action_type": "say_move",
+                    "action_properties": {
+                        "text": this.languageText.get("PEPPER_LOST_CHOSEN_ONE"),
+                        "move_name": "fancyRightArmCircle"
+                    }
+                }]
+            },
+            to_client_id: "pepper",
+            request: true,
+        });
+        return this.RAIMClient.dispatchCommand(command_in);
     }
 
-    explainGameToUser() {
-        // TODO: This user is new to the game, explain!
+    async talkToExpertUser() {
+        // This user has already played check if user wants an explanation!
+        let command_out = await this.robotSayMove({
+            action_type:"say_move",
+            text: this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', this.state.chosen_one),
+            move_name: "fancyRightArmCircle",
+            request: true
+        });
+
+        let confirm_text = await this.stt.startListening();
+        if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+            await this.explainGameToUser();
+        }
+        // TODO: proceed with the game!
+
+    }
+
+    async talkToNewUser() {
+        // This user is new, explain the game!
+        let command_out = await this.robotSayMove({
+            action_type: "say_move",
+            text: this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', this.state.chosen_one),
+            move_name: "fancyRightArmCircle",
+            request: true
+        });
+        await this.explainGameToUser();
+        // TODO: proceed with the game!
+    }
+
+    async explainGameToUser() {
+        // TODO: This user wants an explaination!
     }
 
 }

@@ -115,6 +115,12 @@ class PepperBot:
 
     # ---------------------- speak and/or movement -----------------------------
 
+    def getVolume(self):
+        return self.services["ALAudioDevice"].getOutputVolume()
+
+    def setVolume(self, v):
+        self.services["ALAudioDevice"].setOutputVolume(v)
+
     def say(self, text, speed = 60, blocking = True):
         service = 'ALTextToSpeech'
         if self.services[service] != None:
@@ -140,6 +146,7 @@ class PepperBot:
                 return threadService
         else:
             self._log_error("Service %s not activated!" %(service))
+            return False
 
     def stand(self, blocking = True):
         service = 'ALRobotPosture'
@@ -152,6 +159,7 @@ class PepperBot:
                 return threadService
         else:
             self._log_error("Service %s not activated!" %(service))
+            return False
 
     # ------------------------------ eyes colors ----------------------------------
 
@@ -171,8 +179,10 @@ class PepperBot:
                         self.services[service].on(ledIdColor)
                     else: 
                         self.services[service].off(ledIdColor)
+            return True
         else:
             self._log_error("Service %s not activated!" %(service))
+            return False
 
     def eyesWhite(self):
         service = 'ALLeds'

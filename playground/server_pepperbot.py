@@ -24,76 +24,141 @@ class PepperServer:
             for action in command.data["actions"]:
                 self.pepper_perform_action(command, action)
 
+    def send_response(self, command_in, action_type, is_successful, action_properties = {}):
+        # type: (Command, str, bool, dict) -> None
+        data = {"action_type":action_type, "action_properties":action_properties, "is_successful":is_successful}
+        if command_in.request:
+            command_out = command_in.gen_response(is_successful = is_successful, data=data)
+        else:
+            command_out = Command(
+                data=data,
+                to_client_id=command_in.from_client_id
+            )
+        self.ipc.dispatch_command(command_out)
+
     def pepper_perform_action(self, command_in, action):
-        # type: (Command, any) -> None
+        # type: (Command, dict) -> None
         action_type = action["action_type"]
         action_properties = None if "action_properties" not in action else action["action_properties"]
-        # print("pepper received action:", action_type)
-        # print("pepper received properties:", action_properties)
 
         if action_type == "say":
-            self.pepper.say(action_properties["text"].encode('utf-8'))
+            job_result = self.pepper.say(
+                action_properties["text"].encode('utf-8'),
+                blocking = command_in.request
+            )
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = job_result is not False,
+                action_properties = {}
+            )
 
         elif action_type == "stand":
-            self.pepper.stand()
+            job_result = self.pepper.stand(blocking = command_in.request)
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = job_result is not False,
+                action_properties = {}
+            )
 
         elif action_type == "move":
-            self.pepper.angleInterpolation(*getattr(motions, action_properties["move_name"].encode('utf-8'))())
+            job_result = self.pepper.angleInterpolation(
+                *getattr(motions, action_properties["move_name"].encode('utf-8'))(),
+                blocking = command_in.request
+            )
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = job_result is not False,
+                action_properties = {}
+            )
 
         elif action_type == "say_move":
-            ttt = self.pepper.say(action_properties["text"].encode('utf-8'), blocking=False)
-            self.pepper.angleInterpolation(*getattr(motions, action_properties["move_name"].encode('utf-8'))())
+            job_result_1 = self.pepper.say(action_properties["text"].encode('utf-8'), blocking=False)
+            job_result_2 = self.pepper.angleInterpolation(
+                *getattr(motions, action_properties["move_name"].encode('utf-8'))(),
+                blocking = command_in.request
+            )
+            is_successful = job_result_1 is not False and job_result_2 is not False
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = is_successful,
+                action_properties = {}
+            )
+        
+        elif action_type == "say_move_led":
+            job_result_1 = self.pepper.say(action_properties["text"].encode('utf-8'), blocking=False)
+            job_result_2 = self.pepper.angleInterpolation(
+                *getattr(motions, action_properties["move_name"].encode('utf-8'))(),
+                blocking = False
+            )
+            job_result_3 = self.pepper.eyesColors(
+                0 if "r" not in action_properties["r"].encode('utf-8') else int(action_properties["r"].encode('utf-8')),
+                0 if "g" not in action_properties["g"].encode('utf-8') else int(action_properties["g"].encode('utf-8')),
+                0 if "b" not in action_properties["b"].encode('utf-8') else int(action_properties["b"].encode('utf-8')),
+                -1 if "duration" not in action_properties["duration"].encode('utf-8') else int(action_properties["duration"].encode('utf-8')),
+                "Both" if "part" in action_properties["part"].encode('utf-8') else action_properties["part"].encode('utf-8')
+            )
+            is_successful = job_result_1 is not False and job_result_2 is not False and job_result_3 is not False
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = is_successful,
+                action_properties = {}
+            )
 
         elif action_type == "quit":
             self.shutdown()
 
         elif action_type == "start_video":
             job_result = self.pepper.startVideoFrameGrabberEvent()
-            if command_in.request:
-                command_out = command_in.gen_response(is_successful = job_result)
-            else:
-                command_out = Command(
-                    data={"action_type": action_type, "is_successful": job_result},
-                    to_client_id=command_in.from_client_id
-                )
-            self.ipc.dispatch_command(command_out)
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = job_result is not False,
+                action_properties = {}
+            )
 
         elif action_type == "take_video_frame":
             frame_img = self.pepper.getCameraImageBase64()
-            if command_in.request:
-                command_out = command_in.gen_response(
-                    data={"img": frame_img},
-                    is_successful=frame_img is not None,
-                )
-            else:
-                command_out = Command(
-                    data={"img": frame_img, "is_successful": frame_img is not None},
-                    to_client_id=command_in.from_client_id
-                )
-            self.ipc.dispatch_command(command_out)
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = frame_img is not None,
+                action_properties = {"img": frame_img}
+            )
+
+        elif action_type == "set_volume":
+            job_result = self.pepper.setVolume(
+                float(action_properties["value"].encode('utf-8'))
+            )
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = job_result is not False,
+                action_properties = {}
+            )
 
         elif action_type == "echo": # only to debug if response is taken from server
             txt = action_properties["text"].encode('utf-8')
-            self.pepper.say(txt)
-            command_out = Command(
-                data={"action_type_callback": action_type, "action_properties": {"echo": txt}},
-                to_client_id=command_in.from_client_id
+            job_result = self.pepper.say(txt, blocking = command_in.request)
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = job_result is not False,
+                action_properties = {"echo": txt}
             )
-            self.ipc.dispatch_command(command_out)
             
         elif action_type == "take_fake_video_frame": # only to debug
             frame_img = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAACxklEQVR4nOzTMREAIRDAwJ8fdGAeF6hDxhXZVZAm69z9QdU/HQCTDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmANAOQZgDSDECaAUgzAGkGIM0ApBmAtBcAAP//7QADfl8RE9gAAAAASUVORK5CYII="
-            if command_in.request:
-                command_out = command_in.gen_response(
-                    data={"img": frame_img},
-                    is_successful=frame_img is not None,
-                )
-            else:
-                command_out = Command(
-                    data={"img": frame_img, "is_successful": frame_img is not None},
-                    to_client_id=command_in.from_client_id
-                )
-            self.ipc.dispatch_command(command_out)
+            self.send_response(
+                command_in = command_in, 
+                action_type = action_type, 
+                is_successful = frame_img is not None,
+                action_properties = {"img": frame_img}
+            )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Face Recognition server')
