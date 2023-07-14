@@ -1,8 +1,8 @@
-const cameraList = document.getElementById('camera-list');
-const connectButton = document.getElementById('connect-button');
+// index page
 const video = document.getElementById('video');
 const video_back = document.getElementById('video_back');
-const debugOutput = document.getElementById('debugOutput');
+const label_pepper_see = document.getElementById('label_pepper_see');
+const index_pepper_logo = document.getElementById('index_pepper_logo');
 
 const cropped_unk_face = document.getElementById('cropped_unk_face');
 const cropped_unk_face_text = document.getElementById('cropped_unk_face_text');
@@ -37,13 +37,21 @@ class PepperBrowser {
                     "en-US": "no",
                     "it-IT": "no"
                 },
+                "DETECT_NEW_FACES": {
+                    "en-US": "I'm detecting new faces!",
+                    "it-IT": "Vedo delle possibili facce nuove!"
+                },
                 "PEPPER_LOST_CHOSEN_ONE": {
                     "en-US": "Oh no, I lost you. Come back whenever you want!",
                     "it-IT": "Oh no, ti ho perso di vista. Ritorna quando vuoi!"
                 },
                 "PEPPER_EXPERT_USER_INTRO": {
-                    "en-US": "Hello again %s! Do you want that I explain again the game?",
+                    "en-US": "Welcome back %s! Do you want that I explain again the game?",
                     "it-IT": "Ciao di nuovo %s! Vuoi che ti spieghi di nuovo il gioco?"
+                },
+                "PEPPER_NEW_USER_INTRO": {
+                    "en-US": "Hello %s! My name is PepperTale! Do you want an explanation of the game?",
+                    "it-IT": "Piacere di conoscerti %s! Vuoi che ti spieghi come funziona il gioco?"
                 }
             },
             (lang) => {
@@ -151,23 +159,24 @@ class PepperBrowser {
                                 .then(stream => {
                                     // Display the video stream in the <video> element
                                     video.srcObject = stream;
+                                    index_pepper_logo.style = "width: 30vh;";
                                     this.RAIMClient.dispatchCommand(startCameraCommand(true));
                                 })
                                 .catch(error => {
                                     this.console.error('Error accessing camera:', error);
-                                    debugOutput.innerText = 'Error accessing camera:' + error;
+                                    label_pepper_see.innerText = 'Error accessing camera:' + error;
                                     this.RAIMClient.dispatchCommand(startCameraCommand(false));
                                 });
                         } else {
                             this.console.error('No cameras found!');
-                            debugOutput.innerText = 'No cameras found!';
+                            label_pepper_see.innerText = 'No cameras found!';
                             this.RAIMClient.dispatchCommand(startCameraCommand(false));
                         }
 
                     })
                     .catch(error => {
                         console.error('Error enumerating devices:', error);
-                        debugOutput.innerText = 'Error enumerating devices';
+                        label_pepper_see.innerText = 'Error enumerating devices';
                         this.RAIMClient.dispatchCommand(startCameraCommand(false));
                     })
             })
@@ -333,13 +342,16 @@ class PepperBrowser {
                 }
             }
 
-            debugOutput.innerText = (
-                "chosen one: " + this.state.chosen_one +
-                " | known faces: " + known_faces_names.join(', ') +
-                " | unknown n°: " + Object.keys(command.data["cropped_unknown_faces"]).length +
-                " | threshold: " + this.state.chosen_one_threshold + 
-                " | is chosen one new: " + this.state.is_chosen_one_new
-            );
+            // Output to label the info for the user!
+            let out_text = "";
+            if(this.state.chosen_one != undefined) {
+                if(this.state.is_chosen_one_new) out_text = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', this.state.chosen_one)
+                else out_text = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', this.state.chosen_one)
+            }
+            else {
+                out_text = this.languageText.get("DETECT_NEW_FACES")
+            }
+            label_pepper_see.innerText = out_text;
         }
 
         this.sendFrameCameraRequestDeltaTime();
@@ -408,15 +420,15 @@ class PepperBrowser {
         let command_in = new RAIMClient.Command({
             data: {
                 "actions": [{ 
-                    "action_type": "say_move",
+                    "action_type": action_type,
                     "action_properties": {
-                        "text": this.languageText.get("PEPPER_LOST_CHOSEN_ONE"),
-                        "move_name": "fancyRightArmCircle"
+                        "text": text,
+                        "move_name": move_name
                     }
                 }]
             },
             to_client_id: "pepper",
-            request: true,
+            request: request,
         });
         return this.RAIMClient.dispatchCommand(command_in);
     }

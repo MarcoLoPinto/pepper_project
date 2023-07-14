@@ -13,15 +13,13 @@ class IPCClient():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.t = None
         self.debug = debug
-
-    def print(self, *args):
-        if self.debug: print(*args)
     
     def connect(self, host="localhost", port=5001):
         """
         Connects this client to the server using the provided port
         """
-        self.print("Connecting IPC client %s..." %(self.name))
+        if self.debug:
+            print("Connecting IPC client %s..." %(self.name))
         self.sock.connect((host,port))
         self.sock.sendall(self.name.encode("utf-8"))
         if self.on_connect != None: self.on_connect()
@@ -32,7 +30,8 @@ class IPCClient():
         """
         Disconnects this client from the server
         """
-        self.print("Disconnecting IPC client %s..." %(self.name))
+        if self.debug:
+            print("Disconnecting IPC client %s..." %(self.name))
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
         if self.t != None: self.t = None
@@ -53,7 +52,8 @@ class IPCClient():
                 full_data = full_data[:-2]
                 command = Command.fromJson(full_data)
                 full_data = ""
-                self.print("%s received a command from %s: %s" %(self.name, command.from_client_id, command.data))
+                if self.debug:
+                    print("%s received a command from %s: %s" %(self.name, command.from_client_id, command.data))
                 self.__internal_dispatch_command(command)
     
     def __internal_dispatch_command(self, command):

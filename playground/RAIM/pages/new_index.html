@@ -10,28 +10,31 @@
     <div id="index_page" class="page">
         <div class="flex_col_centered">
             <h1>PepperTale</h1>
-            <img src="/assets/peppertale_logo.png" style="width: 30vh" class="img_pulse" />
-            <br><br><br>
-            <label class="text_md">Come near pepper and the game will start!</label>
-            
+            <img src="/assets/peppertale_logo.png" id="index_pepper_logo" style="width: 40vh" class="img_pulse" />
             <!-- Video captured from camera of the PC/stablet -->
-            <video id="video" autoplay></video>
-            <!-- Video captured from camera of the PC/stablet -->
-            <img id="video_back" />
-            <br>
-            <label id="debugOutput"></label>
+            <video id="video" style="width: 40vh" autoplay></video>
+            <!-- Video captured from camera of the PC/stablet (getted from response) -->
+            <img id="video_back" style="width: 40vh" />
+            <br><br>
+            <label class="text_m" id="label_pepper_see"></label>
         </div>
         
     </div>
 
     <div id="new_face_page" class="page">
-        <h1>New face detected:</h1>
-        <img id="cropped_unk_face" />
-        <label id="cropped_unk_face_text"></label>
+        <div class="flex_col_centered">
+            <h1 id="new_face_detected_title">New face detected!</h1>
+            <br>
+            <img id="cropped_unk_face" style="width: 40vh" />
+            <br><br>
+            <label class="text_m" id="cropped_unk_face_text"></label>
+        </div>
     </div>
 
     <div id="explanation_page" class="page">
-
+        <div class="flex_col_centered">
+            <img src="/assets/peppertale_logo.png" id="explanation_pepper_logo" style="width: 40vh" class="img_pulse" />
+        </div>
     </div>
 
     <div id="prp_page" class="page">
