@@ -8,16 +8,37 @@ class Routing {
         const bodyDivs = divs.filter(div => div.parentNode === body);
         // Extract the IDs of the body divs into a new array
         this.routes = bodyDivs.map(div => div.id);
-
+        
+        this.route = undefined;
+        this.history = [];
         this.goToPage(startingPage);
     }
     goToPage(page) {
+        if(this.route == page) return;
         for (let p of this.routes) {
             let element = document.getElementById(p);
             element.style.display = 'none';
         }
         let element = document.getElementById(page);
         element.style.display = 'block';
+
+        this.addToHistory(page);
+        this.route = page;
+    }
+
+    goBack() {
+        let page = this.removeFromHistory();
+        page = this.removeFromHistory();
+        this.goToPage(page);
+    }
+
+    addToHistory(element) {
+        if(this.history.length >= this.routes) this.history.shift();
+        this.history.push(element);
+    }
+
+    removeFromHistory() {
+        return this.history.pop();
     }
 
 }
@@ -85,5 +106,29 @@ class LanguageText {
         if (!(name in this.textMapping)) throw `${name} not present in the vocabulary!`
         if (!(this.lang in this.textMapping[name])) throw `${this.lang} not present in the ${name} vocabulary!`
         return this.textMapping[name][this.lang];
+    }
+}
+
+class BetterConsole {
+    constructor({enabled = true}) {
+        this.enabled = enabled;
+    }
+
+    log(...args) {
+        if (this.enabled) {
+            console.log(...args);
+        }
+    }
+
+    warn(...args) {
+        if (this.enabled) {
+            console.warn(...args);
+        }
+    }
+
+    error(...args) {
+        if (this.enabled) {
+            console.error(...args);
+        }
     }
 }

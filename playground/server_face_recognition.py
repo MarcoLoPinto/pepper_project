@@ -17,12 +17,12 @@ class FaceRecognitionServer:
         print("Shutting down the server...")
         self.ipc.disconnect()
 
-    def fr_listener(self, command):
+    def fr_listener(self, command: Command):
         if "actions" in command.data:
             for action in command.data["actions"]:
                 self.fr_perform_action(command, action)
 
-    def fr_perform_action(self, command_in, action):
+    def fr_perform_action(self, command_in: Command, action):
         action_type = action["action_type"]
         action_properties = None if "action_properties" not in action else action["action_properties"]
         
@@ -38,19 +38,20 @@ class FaceRecognitionServer:
 
         elif action_type == "set_unknown_faces":
             # Update the database of informations
-            self.face_recognition.run_recognition_frame(action_properties["img"])
-            # Return the information to the request
-            command_out = Command(
-                data={"action_success": action_type},
-                to_client_id=command_in.from_client_id
-            )
+            print("Set faces called!")
+            try:
+                new_faces = self.face_recognition.set_unknown_faces(action_properties["cropped_unknown_faces"])
+                # Return the information to the request
+                command_out = command_in.gen_response(is_successful=True, data={"new_faces": new_faces})
+            except Exception as e:
+                command_out = command_in.gen_response(is_successful=False, data={"error": e})
             self.ipc.dispatch_command(command_out)
 
         elif action_type == "set_unknown_face_threshold":
-            # Update the database of informations
             self.face_recognition.UNKNOWN_FACE_THRESHOLD = int(action_properties["value"])
             print("Setting unknown threshold to:", int(action_properties["value"]))
-            
+            command_out = command_in.gen_response(is_successful=True)
+            self.ipc.dispatch_command(command_out)
 
         elif action_type == "quit":
             self.shutdown()

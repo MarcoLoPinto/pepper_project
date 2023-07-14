@@ -121,12 +121,13 @@ class PepperBot:
             self.services[service].setParameter("speed", speed)
             if blocking:
                 self.services[service].say(text)
-                return None
+                return True
             else:
                 threadService = self.services[service].post.say(text)
                 return threadService
         else:
             self._log_error("Service %s not activated!" %(service))
+            return False
 
     def angleInterpolation(self, names, keys, times, isAbsolute, blocking = True):
         service = 'ALMotion'
@@ -312,13 +313,15 @@ class PepperBot:
         service = 'ALVideoDevice'
         if self.services[service] == None:
             self._log_error("Service %s not activated! startVideoFrameGrabberEvent cannot start!" %(service))
-            return
+            return False
         if self.robotCameraEvent != None:
             self._log_error("The startVideoFrameGrabberEvent already started!")
-            return
+            return True
         resolution = 2    # VGA
         colorSpace = 11   # RGB
         self.robotCameraEvent = self.services[service].subscribeCamera("grab3_images", 0, resolution, colorSpace, 5)
+
+        return True
 
     def getCameraImage(self):
         if not hasattr(self, 'robotCameraEvent') or self.robotCameraEvent == None:

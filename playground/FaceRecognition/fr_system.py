@@ -49,9 +49,10 @@ class FaceRecognition:
     frame = None
 
     def __init__(self, RESIZE_VALUE = 4, UNKNOWN_FACE_THRESHOLD = 10):
-        self.encode_faces()
+        self.faces_dir = os.path.join( os.path.dirname(os.path.abspath(__file__) ), "faces/")
         self.RESIZE_VALUE = RESIZE_VALUE
         self.UNKNOWN_FACE_THRESHOLD = UNKNOWN_FACE_THRESHOLD
+        self.encode_faces()
 
     def encode_faces(self):
         """
@@ -61,9 +62,8 @@ class FaceRecognition:
         """
         self.known_face_encodings = []
         self.known_face_names = []
-        faces_dir = os.path.join( os.path.dirname(os.path.abspath(__file__) ), "faces/")
-        for image in os.listdir( faces_dir ):
-            face_image = face_recognition.load_image_file(os.path.join(faces_dir, image))
+        for image in os.listdir( self.faces_dir ):
+            face_image = face_recognition.load_image_file(os.path.join(self.faces_dir, image))
             face_encoding = face_recognition.face_encodings(face_image)[0]
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
@@ -205,8 +205,10 @@ class FaceRecognition:
         return cropped_unknown_faces
     
     def set_unknown_faces(self, setted_faces: Dict[int, str]):
+        new_faces = []
         for key, name in setted_faces.items():
-            if key in self.face_locations:
+            key = int(key)
+            if len(self.face_locations) > key:
                 (top, right, bottom, left) = self.face_locations[key]
                 top *= self.RESIZE_VALUE
                 right *= self.RESIZE_VALUE
@@ -214,8 +216,11 @@ class FaceRecognition:
                 left *= self.RESIZE_VALUE
 
                 cropped_unknown_face = self.frame[top:bottom, left:right]
-                cv2.imwrite('./faces/%s'%self.name_to_filename(name), cropped_unknown_face) # Save the new face image in the faces folder
+                filename = self.name_to_filename(name)
+                cv2.imwrite(os.path.join(self.faces_dir,filename), cropped_unknown_face) # Save the new face image in the faces folder
                 del self.unknown_faces[key]
+                new_faces.append(self.filename_to_name(filename))
         self.encode_faces()
+        return new_faces
 
 
