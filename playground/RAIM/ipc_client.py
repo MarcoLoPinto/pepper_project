@@ -4,7 +4,7 @@ import random
 from .raim_command import Command
 
 class IPCClient():
-    def __init__(self, name="IPCClient_"+str(random.randint(1000,9999))):
+    def __init__(self, name="IPCClient_"+str(random.randint(1000,9999)), debug=True):
         self.name = name # The name of this client. Command having id equal to this name will be sent to this client
         self.general_command_listener = None # The function called when the server sends a command to this client
         self.on_connect = None # Callback called when the connection opens
@@ -12,11 +12,16 @@ class IPCClient():
         self.response_callbacks = {} # A disctionary of command id to callbacks
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.t = None
+        self.debug = debug
+
+    def print(self, *args):
+        if self.debug: print(*args)
     
     def connect(self, host="localhost", port=5001):
         """
         Connects this client to the server using the provided port
         """
+        self.print("Connecting IPC client %s..." %(self.name))
         self.sock.connect((host,port))
         self.sock.sendall(self.name.encode("utf-8"))
         if self.on_connect != None: self.on_connect()
@@ -27,7 +32,7 @@ class IPCClient():
         """
         Disconnects this client from the server
         """
-        print("Disconnecting IPC client %s..." %(self.name))
+        self.print("Disconnecting IPC client %s..." %(self.name))
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
         if self.t != None: self.t = None
@@ -48,7 +53,7 @@ class IPCClient():
                 full_data = full_data[:-2]
                 command = Command.fromJson(full_data)
                 full_data = ""
-                print("%s received a command from %s: %s" %(self.name, command.from_client_id, command.data))
+                self.print("%s received a command from %s: %s" %(self.name, command.from_client_id, command.data))
                 self.__internal_dispatch_command(command)
     
     def __internal_dispatch_command(self, command):
