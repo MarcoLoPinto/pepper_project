@@ -19,7 +19,7 @@ class PepperClient {
 
     constructor({receiveListener = (command) => {}, onConnect = () => {}, onDisconnect = () => {}}){
         // RAIM Client
-        this.RAIMClient = new RAIMClient("browser");
+        this.RAIMClient = new RAIMClient(`pepper_client_${Math.round(Math.random()*10000)}`);
         this.RAIMClient.debug = false;
         this.RAIMClient.setCommandListener(receiveListener);
         this.RAIMClient.onDisconnect = onDisconnect;
