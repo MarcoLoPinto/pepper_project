@@ -9,7 +9,7 @@ class IPCClient():
         self.general_command_listener = None # The function called when the server sends a command to this client
         self.on_connect = None # Callback called when the connection opens
         self.on_disconnect = None # Callback called when the connection closes
-        self.response_callbacks = {} # A disctionary of command id to callbacks
+        self.response_callbacks = {} # A dictionary of command id to callbacks
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.t = None
         self.debug = debug

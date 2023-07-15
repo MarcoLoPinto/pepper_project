@@ -20,14 +20,9 @@ docker/downloads/*
 # swag ignore
 server_docker/swag_config/crontabs/*
 server_docker/swag_config/dns-conf/*
-server_docker/swag_config/etc/letsencrypt/*
-server_docker/swag_config/etc/letsencrypt/*/*
-server_docker/swag_config/etc/letsencrypt/*/*/*
-server_docker/swag_config/etc/letsencrypt/*/*/*/*
-server_docker/swag_config/etc/letsencrypt/*/*/*/*/*
-server_docker/swag_config/etc/letsencrypt/*/*/*/*/*/*
 server_docker/swag_config/fail2ban/*
-server_docker/swag_config/keys/*
 server_docker/swag_config/log/*
 server_docker/swag_config/.donoteditthisfile.conf
 server_docker/swag_config/.migrations
+
+server_docker/duck.log

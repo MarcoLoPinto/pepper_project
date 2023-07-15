@@ -23,7 +23,13 @@ class RAIMServer:
         
         @self.app.route("/")
         def index():
-            return send_file(f"{DIR}/pages/index.html")
+            html_files = [filename for filename in os.listdir(f"{DIR}/pages/") if filename.endswith(".html")]
+            if os.path.exists(f"{DIR}/pages/index.html"):
+                return send_file(f"{DIR}/pages/index.html")
+            elif len(html_files) > 0:
+                return send_file(f"{DIR}/pages/{html_files[0]}")
+            else:
+                return "Error 404, Index page not Found", 404
         @self.app.route("/<path:filename>")
         def serve(filename):
             path = f"{DIR}/pages/{filename}"
