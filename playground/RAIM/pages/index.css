@@ -73,14 +73,109 @@ select option {
     font-size: 24px;
 }
 
-/* MISCELLANEOUS */
+/* MIC */
 
-.img_pulse {
-    animation: pulse 2s infinite;
-    transition: transform 0.5s ease-in-out;
+.mic-container {
+    display: flex;
+	flex: 0 1 100%;
+    justify-content: center;
+    align-items: center;
+    align-content: stretch;
+    margin: 10px;
+}
+
+.mic-container .mic-outline {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 8px solid #5ab9d1;
+    animation: pulse 2s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+    position: absolute;
+}
+
+.mic-container .mic {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(2);
+    width: 16px;
+    height: 12px;
+    border-bottom-left-radius: 120px;
+    border-bottom-right-radius: 120px;
+    border: 2px solid #5ab9d1;
+    border-top: 0;
+    margin-top: 3px;
+    color: #5ab9d1;
+}
+
+.mic-container .mic::after,
+.mic-container .mic::before {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute
+}
+
+.mic-container .mic::after {
+    border: 2px solid #5ab9d1;
+    width: 8px;
+    height: 18px;
+    left: 2px;
+    top: -10px;
+    border-radius: 4px
+}
+
+.mic-container .mic::before {
+    width: 10px;
+    height: 4px;
+    top: 12px;
+    left: 1px;
+    border-right: 4px solid transparent;
+    box-shadow:
+        0 2px 0,
+        inset -2px 0 0
+}
+
+.mic-container .delayed {
+	animation-delay: 1.5s;
 }
 
 @keyframes pulse {
+    0% {
+        transform: scale(0);
+        opacity: 0.8;
+        border: 0px solid #5ab9d1;
+    }
+
+    50% {
+        border: solid #46afc9;
+        opacity: 0.2;
+        border: 8px solid #5ab9d1;
+    }
+
+    90% {
+        transform: scale(2.2);
+        opacity: 0.6;
+        border: 3px solid #46c3e2;
+    }
+
+    100% {
+        transform: scale(3.3);
+        opacity: 0;
+        border: 0px solid #7cd3e9;
+    }
+}
+
+/* MISCELLANEOUS */
+
+.img_pulse {
+    animation: heart-pulse 2s infinite;
+    transition: width 0.5s ease-in-out;
+}
+
+@keyframes heart-pulse {
     0% {
         transform: scale(1);
     }
