@@ -8,9 +8,10 @@ import pepperbot.PepperMotions as motions
 import argparse
 
 class PepperServer:
-    def __init__(self, ipc_server_host, ipc_server_port, pepper_host = "127.0.0.1", pepper_port = 9559, pepper_alive = False, **kwargs):
+    def __init__(self, ipc_server_host, ipc_server_port, pepper_host = "127.0.0.1", pepper_port = 9559, pepper_alive = False, debug = False, **kwargs):
         self.pepper = PepperBot(pepper_host, pepper_port, alive=pepper_alive)
         self.ipc = IPCClient("pepper")
+        self.ipc.debug = debug
         
         self.ipc.set_command_listener(self.pepper_listener)
         self.ipc.connect(host=ipc_server_host, port=ipc_server_port)
@@ -167,6 +168,7 @@ if __name__ == '__main__':
     parser.add_argument('--pepper_host', type=str, default='127.0.0.1', help='Pepper robot hostname (default: 127.0.0.1)')
     parser.add_argument('--pepper_port', type=int, default=9559, help='Pepper robot port number (default: 9559)')
     parser.add_argument('--pepper_alive', type=bool, default=False, help='Pepper robot alive capability (default: False)')
+    parser.add_argument('--debug', type=bool, default=False, help='Print debug infos (default: False)')
     args = vars(parser.parse_args())
 
     pepper_server = PepperServer(**args)

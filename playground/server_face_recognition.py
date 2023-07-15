@@ -6,9 +6,10 @@ from RAIM.raim_command import Command
 import argparse
 
 class FaceRecognitionServer:
-    def __init__(self, ipc_server_host, ipc_server_port, resize_value = 4, unknown_face_threshold = 10, **kwargs) -> None:
+    def __init__(self, ipc_server_host, ipc_server_port, resize_value = 4, unknown_face_threshold = 10, debug = False, **kwargs) -> None:
         self.face_recognition = FaceRecognition(RESIZE_VALUE=resize_value, UNKNOWN_FACE_THRESHOLD=unknown_face_threshold)
         self.ipc = IPCClient("face_recognition")
+        self.ipc.debug = debug
         
         self.ipc.set_command_listener(self.fr_listener)
         self.ipc.connect(host=ipc_server_host, port=ipc_server_port)
@@ -63,6 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('--ipc_server_port', type=int, default=5001, help='IPC server port number (default: 5001)')
     parser.add_argument('--resize_value', type=int, default=4, help='Face Recognition downscaling (default: 4)')
     parser.add_argument('--unknown_face_threshold', type=int, default=10, help='Face Recognition unknown threshold (see documentation) (default: 10)')
+    parser.add_argument('--debug', type=bool, default=False, help='Print debug infos (default: False)')
     args = vars(parser.parse_args())
 
     fr_server = FaceRecognitionServer(**args)
