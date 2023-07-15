@@ -19,6 +19,7 @@ class PepperServer:
     def shutdown(self):
         print("Shutting down the server...")
         self.ipc.disconnect()
+        self.pepper.quit()
 
     def pepper_listener(self, command):
         if "actions" in command.data:

@@ -151,10 +151,11 @@ class RAIMClient {
 }
 
 function RAIMgetWebsocketUrlParams() {
+    let localDomain = ["localhost","127.0.0.1","0.0.0.0"]
     let domain = window.location.hostname
     let protocol = window.location.protocol === "https:" ? "wss" : "ws"
-    if (domain == "localhost") {
-        return [protocol, "localhost", Number(window.location.port) + 2]
+    if (localDomain.includes(domain)) {
+        return [protocol, domain, Number(window.location.port) + 2]
     }
     else {
         return [protocol, "websocket." + domain, 0]
