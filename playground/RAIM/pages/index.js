@@ -285,6 +285,7 @@ class App {
                     if(this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
                     if(this.state.is_chosen_one_new) await this.talkToNewUser();
                     else await this.talkToExpertUser();
+                    this.storyGame();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
                     // No known face, but there is someone that the robot does not know!
@@ -399,13 +400,21 @@ class App {
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
             true
         );
-
-        let confirm_text = await this.stt.startListening();
-        if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
-            await this.explainGameToUser();
+        try {
+            let confirm_text = await this.stt.startListening();
+            if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+                await this.explainGameToUser();
+            }
+        } catch (error) {
+            await this.pepper.sayMove(
+                this.languageText.get("PEPPER_NO_HEAR"), 
+                PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                true
+            );
+            await this.talkToExpertUser();
         }
-        // TODO: proceed with the game!
-
+        
+        return true;
     }
 
     async talkToNewUser() {
@@ -416,7 +425,7 @@ class App {
             true
         );
         await this.explainGameToUser();
-        // TODO: proceed with the game!
+        return true;
     }
 
     async explainGameToUser() {
@@ -424,6 +433,10 @@ class App {
     }
 
     /* Phase: the game! */
+
+    async storyGame() {
+
+    }
 
     // TODO
 
