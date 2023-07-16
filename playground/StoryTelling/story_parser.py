@@ -155,6 +155,7 @@ def read_story_file(path, lang="EN") -> Story:
             name=action_name,
             pretext=values_set[action_val["pretext"]],
             text=values_set[action_val["text"]],
+            mood=action_val.get("mood","happy"),
             preconditions=preconditions,
             effects=effects,
             nondeterministic=action_val.get("nondeterministic", False),

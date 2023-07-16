@@ -38,10 +38,11 @@ class Atom():
         return "Atom " + self.name
 
 class Action():
-    def __init__(self, name:str, pretext: str, text: str, preconditions: Dict[str, Atom] = {}, effects: Dict[str, Atom] = {}, nondeterministic: bool = False, do_action_atom: Atom = None) -> None:
+    def __init__(self, name:str, pretext: str, text: str, mood: str, preconditions: Dict[str, Atom] = {}, effects: Dict[str, Atom] = {}, nondeterministic: bool = False, do_action_atom: Atom = None) -> None:
         self.name = name
         self.pretext = pretext
         self.text = text
+        self.mood = mood
         self.preconditions = preconditions
         self.effects = effects
         self.nondeterministic = nondeterministic

@@ -75,6 +75,7 @@ class StoryTellingServer:
             "story_id": story_id,
             "story_finished": story_finished,
             "prompts": [act.text for act in story.actions_history],
+            "moods": [act.mood for act in story.actions_history],
             "possible_user_actions": [act.pretext for act in next_user_actions]
         }
     

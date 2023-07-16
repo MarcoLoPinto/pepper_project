@@ -55,7 +55,8 @@
             "preconditions": {},
             "effects": {
                 "at0": true
-            }
+            },
+            "mood": "happy"
         },
         "a1": {
             "nondeterministic": true,
@@ -64,7 +65,8 @@
             "preconditions": {
                 "at0": true
             },
-            "effects": {}
+            "effects": {},
+            "mood": "happy"
         },
         "a2": {
             "nondeterministic": true,
@@ -73,14 +75,16 @@
             "preconditions": {
                 "at0": true
             },
-            "effects": {}
+            "effects": {},
+            "mood": "happy"
         },
         "a3": {
             "nondeterministic": false,
             "pretext": "pt3",
             "text": "t3",
             "preconditions": {},
-            "effects": {}
+            "effects": {},
+            "mood": "happy"
         },
         "a4": {
             "nondeterministic": false,
@@ -89,7 +93,8 @@
             "preconditions": {},
             "effects": {
                 "gg1": true
-            }
+            },
+            "mood": "happy"
         },
         "a5": {
             "nondeterministic": false,
@@ -98,7 +103,8 @@
             "preconditions": {},
             "effects": {
                 "gg2": true
-            }
+            },
+            "mood": "happy"
         }
     },
     "actions_children": {
