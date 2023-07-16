@@ -293,10 +293,8 @@ class App {
                     let chosen_one = known_faces_names[0];
                     this.state.chosen_one = known_faces_names[0];
                     if(this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
-                    this.routing.goToPage("explanation_page");
                     if(this.state.is_chosen_one_new) await this.talkToNewUser();
                     else await this.talkToExpertUser();
-                    this.routing.goToPage("prp_page");
                     this.storyGame();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
@@ -407,6 +405,7 @@ class App {
     /* Phase: introduction of the game to the user */
 
     async talkToExpertUser() {
+        this.routing.goToPage("explanation_page");
         // This user has already played check if user wants an explanation!
         label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', this.state.chosen_one);
         await this.pepper.sayMove(
@@ -438,6 +437,7 @@ class App {
     }
 
     async talkToNewUser() {
+        this.routing.goToPage("explanation_page");
         // This user is new, explain the game!
         label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', this.state.chosen_one);
         await this.pepper.sayMove(
@@ -456,6 +456,8 @@ class App {
     /* Phase: the game! */
 
     async storyGame() {
+        this.routing.goToPage("prp_page");
+        // ...
         this.routing.goToPage("index_page"); // TODO: to remove
     }
 
