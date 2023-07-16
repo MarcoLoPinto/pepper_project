@@ -67,12 +67,28 @@ class App {
                     "it-IT": "Oh no, ti ho perso di vista. Ritorna quando vuoi!"
                 },
                 "PEPPER_EXPERT_USER_INTRO": {
-                    "en-US": "Welcome back %s! Do you want that I explain again the game?",
+                    "en-US": "Welcome back %s! Do you want me to explain the game again?",
                     "it-IT": "Ciao di nuovo %s! Vuoi che ti spieghi di nuovo il gioco?"
                 },
                 "PEPPER_NEW_USER_INTRO": {
                     "en-US": "Hello %s! My name is PepperTale! Do you want an explanation of the game?",
                     "it-IT": "Piacere di conoscerti %s! Vuoi che ti spieghi come funziona il gioco?"
+                },
+                "PEPPER_CHOOSE_STORY": {
+                    "en-US": "Choose a story among those",
+                    "it-IT": "Scegli una storia tra queste"
+                },
+                "PEPPER_CONFIRM_STORY": {
+                    "en-US": "So the story is %s?",
+                    "it-IT": "Quindi la storia è %s?"
+                },
+                "PEPPER_STORY_NOT_UNDERSTOOD": {
+                    "en-US": "%s is not one of the available stories, maybe i got it wrong, can you repeat please?",
+                    "it-IT": "%s non è tra le storie disponibili, forse ho capito male, puoi ripetere per favore?"
+                },
+                "PEPPER_START_STORY": {
+                    "en-US": "Ok, let's begin!",
+                    "it-IT": "Ok, iniziamo!"
                 }
             },
             (lang) => {
@@ -104,6 +120,18 @@ class App {
             receiveListener: this.listenerFaceRecognition.bind(this),
             onConnect: this.initFaceRecognition.bind(this)
         });
+        this.storyTelling = new StoryTellingManager({
+            lang: lang,
+            onConnect: async () => {
+                try {
+                    await this.pepper.stand(true);
+                    this.console.log("Story telling connected.");
+                }
+                catch(error) {
+                    this.console.error("Something went wrong on the story telling server");
+                }
+            }
+        })
     }
 
     sleep(ms) {
@@ -457,6 +485,65 @@ class App {
 
     async storyGame() {
         this.routing.goToPage("prp_page");
+
+        // "PEPPER_CHOOSE_STORY"
+        // "PEPPER_CONFIRM_STORY"
+        // "PEPPER_STORY_NOT_UNDERSTOOD"
+        // "PEPPER_START_STORY"
+
+        // //Story selection
+        
+
+        // // Story loop
+
+        // try {
+        //     cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_NAME")
+        //     await this.pepper.sayMove(
+        //         this.languageText.get("PEPPER_WHAT_IS_FACE_NAME"), 
+        //         PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+        //         true
+        //     );
+        //     let name_text = await this.stt.startListening();
+        //     let conf_text = this.languageText.get("PEPPER_WHAT_IS_FACE_NAME_CONFIRMATION").replace('%s', name_text)
+        //     cropped_unk_face_text.innerText = conf_text
+        //     await this.pepper.sayMove(
+        //         conf_text, 
+        //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
+        //         true
+        //     );
+
+        //     let confirm_text = await this.stt.startListening();
+
+        //     if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+        //         await this.pepper.sayMove(
+        //             this.languageText.get("PEPPER_WHAT_IS_FACE_NAME_CONFIRMATION_YES"), 
+        //             PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+        //             true
+        //         );
+        //         this.state.cropped_unknown_faces[key] = name_text;
+        //         this.state.new_faces.push(name_text);
+        //         await this.setNewFaceName(command, objList, idx + 1);
+        //     }
+        //     else {
+        //         await this.pepper.sayMove(
+        //             this.languageText.get("PEPPER_WHAT_IS_FACE_NAME_CONFIRMATION_NO"), 
+        //             PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+        //             true
+        //         );
+        //         await this.setNewFaceName(command, objList, idx);
+        //     }
+        // } catch (error) {
+        //     this.console.log("An error occurred (propbably no response)");
+        //     this.console.error(error);
+        //     cropped_unk_face_text.innerText = this.languageText.get("PEPPER_NO_HEAR");
+        //     await this.pepper.sayMove(
+        //         this.languageText.get("PEPPER_NO_HEAR"), 
+        //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
+        //         true
+        //     );
+        //     await this.sleep(1000);
+        //     await this.setNewFaceName(command, objList, idx);
+        // }
         // ...
         this.routing.goToPage("index_page"); // TODO: to remove
     }

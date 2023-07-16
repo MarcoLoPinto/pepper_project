@@ -52,9 +52,10 @@ class StoryTellingClient {
         return this.sendAction(action, request);
     }
 
-    startStory(name, request = true){
+    startStory(name, lang, request = true){
         let action = new StoryTellingClient.StoryAction("story_start",{
-            story_name: name
+            story_name: name,
+            story_language: lang
         })
         return this.sendAction(action, request);
     }
@@ -78,8 +79,9 @@ class StoryTellingClient {
 
 class StoryTellingManager {
 
-    constructor(){
-        this.client = StoryTellingClient()
+    constructor({lang = "EN", onConnect = () => {}}){
+        this.client = StoryTellingClient({onConnect})
+        this.lang = lang
         this.storyId = null
         this.promptIndex = 0
         this.storyFinished = false
@@ -96,7 +98,7 @@ class StoryTellingManager {
     }
 
     async startStory(name){
-        this.storyId = await this.client.startStory(name).then(this.parseResponse).then(({story_id}) => story_id)
+        this.storyId = await this.client.startStory(name, this.lang).then(this.parseResponse).then(({story_id}) => story_id)
     }
 
     async getNewPromptsAndActions(){

@@ -47,7 +47,8 @@ class StoryTellingServer:
 
             if action_type == "story_start":
                 story_name = action_properties["story_name"]
-                response_action, is_successful = self.start_story(story_name)
+                story_lang = action_properties["story_language"]
+                response_action, is_successful = self.start_story(story_name, story_lang)
                 self.send_response(command_in=command, action=response_action, is_successful=is_successful)
 
             if action_type == "story_until_now":
@@ -150,13 +151,13 @@ class StoryTellingServer:
         return {"action_type":"story_execute_action", "action_properties":self.create_action_properties(story_id), "is_successful":True}, True
             
 
-    def start_story(self,story_name):
+    def start_story(self,story_name,lang = "EN"):
         action = {"action_type":"start_story", "action_properties":{}, "is_successful":False}
         if not os.path.exists(os.path.join(self.stories_folder, story_name, "story.json")):
             return action, False
         story_id = str(uuid.uuid4())
         json_path = os.path.join(self.stories_folder, story_name, "story.json")
-        story = read_story_file(json_path)
+        story = read_story_file(json_path, lang)
         domain_str = story.genPDDLDomain()
 
         save_path = tempfile.mkdtemp()

@@ -17,7 +17,16 @@ class PepperClient {
     static MOVE_NAMES = {
         bothArmsBumpInFront: "bothArmsBumpInFront", 
         fancyRightArmCircle: "fancyRightArmCircle", 
-        normalPosture: "normalPosture"
+        normalPosture: "normalPosture",
+        happy: "happy",
+        kisses: "kisses",
+        excited: "excited",
+        thinking: "thinking",
+        curious: "curious",
+        chill: "chill",
+        fear: "fear",
+        confused: "confused",
+        bored: "bored"
     };
     static EYE_PARTS = {Both:"Both", Left:"Left", Right:"Right"}
 
