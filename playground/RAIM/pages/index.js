@@ -162,14 +162,14 @@ class App {
 
     async startCameraBrowser() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
             this.console.log("Cameras discovered:", videoDevices);
             if (videoDevices.length > 0) {
                 const device = videoDevices[0];
-                const cameraStream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: device.deviceId } });
-                video.srcObject = cameraStream;
+                this.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: device.deviceId } });
+                video.srcObject = this.cameraStream;
                 index_pepper_logo.style = "width: 30vh;";
                 return true;
             } else {
@@ -177,6 +177,14 @@ class App {
             }
         } catch (error) {
             return false;
+        }
+    }
+
+    stopCameraBrowser() {
+        if (this.cameraStream) {
+            this.console.log("Stopping camera browser");
+            this.cameraStream.getTracks().forEach(track => track.stop()); // Stop all tracks in the camera stream
+            this.cameraStream = null; // Remove the reference to the camera stream
         }
     }
 
@@ -356,7 +364,7 @@ class App {
             cropped_unk_face_text.innerText = conf_text
             await this.pepper.sayMove(
                 conf_text, 
-                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                PepperClient.MOVE_NAMES.fancyRightArmCircle,
                 true
             );
 
@@ -382,6 +390,7 @@ class App {
             }
         } catch (error) {
             this.console.log("An error occurred (propbably no response)");
+            this.console.error(error);
             cropped_unk_face_text.innerText = this.languageText.get("PEPPER_NO_HEAR");
             await this.pepper.sayMove(
                 this.languageText.get("PEPPER_NO_HEAR"), 
@@ -408,13 +417,18 @@ class App {
         try {
             let confirm_text = await this.stt.startListening();
             if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+                this.console.log("EXPLAIN GAME TO EXPERT USER")
                 await this.explainGameToUser();
             }
+            else {
+                this.console.log("EXPLAIN GAME TO EXPERT USER RESPONSE NO")
+            }
         } catch (error) {
+            this.console.error(error);
             label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
             await this.pepper.sayMove(
                 this.languageText.get("PEPPER_NO_HEAR"), 
-                PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
                 true
             );
             await this.talkToExpertUser();
@@ -442,7 +456,7 @@ class App {
     /* Phase: the game! */
 
     async storyGame() {
-
+        this.routing.goToPage("index_page"); // TODO: to remove
     }
 
     // TODO

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TEST</title>
+</head>
+
+<body>
+    <!-- Input area -->
+    <label for="Speech Recognition">Speech Recognition</label>
+    <input type="text" name="" id="speechToText" placeholder="Speak Something" onclick="record()">
+
+    <!-- Below is the script for voice recognition and conversion to text-->
+    <script src="/utils.js"></script>
+    <script defer>
+        async function startCameraBrowser() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                this.console.log("Cameras discovered:", videoDevices);
+                if (videoDevices.length > 0) {
+                    const device = videoDevices[0];
+                    this.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: device.deviceId } });
+                    video.srcObject = this.cameraStream;
+                    index_pepper_logo.style = "width: 30vh;";
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                return false;
+            }
+        }
+        (async () => {
+            let sr = new SpeechRecognitionBrowser();
+            let r = await startCameraBrowser();
+            let response = await sr.startListening();
+            document.getElementById('speechToText').value = response;
+        })()
+
+    </script>
+    <!-- end of script -->
+</body>
+
+</html>
