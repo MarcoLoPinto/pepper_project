@@ -6,6 +6,8 @@ const index_pepper_logo = document.getElementById('index_pepper_logo');
 // new face page
 const cropped_unk_face = document.getElementById('cropped_unk_face');
 const cropped_unk_face_text = document.getElementById('cropped_unk_face_text');
+// explanation page
+const label_explanation = document.getElementById('label_explanation');
 
 class App {
     constructor(
@@ -283,8 +285,10 @@ class App {
                     let chosen_one = known_faces_names[0];
                     this.state.chosen_one = known_faces_names[0];
                     if(this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
+                    this.routing.goToPage("explanation_page");
                     if(this.state.is_chosen_one_new) await this.talkToNewUser();
                     else await this.talkToExpertUser();
+                    this.routing.goToPage("prp_page");
                     this.storyGame();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
@@ -395,6 +399,7 @@ class App {
 
     async talkToExpertUser() {
         // This user has already played check if user wants an explanation!
+        label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', this.state.chosen_one);
         await this.pepper.sayMove(
             this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', this.state.chosen_one), 
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
@@ -406,6 +411,7 @@ class App {
                 await this.explainGameToUser();
             }
         } catch (error) {
+            label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
             await this.pepper.sayMove(
                 this.languageText.get("PEPPER_NO_HEAR"), 
                 PepperClient.MOVE_NAMES.fancyRightArmCircle,
@@ -419,6 +425,7 @@ class App {
 
     async talkToNewUser() {
         // This user is new, explain the game!
+        label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', this.state.chosen_one);
         await this.pepper.sayMove(
             this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', this.state.chosen_one), 
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
