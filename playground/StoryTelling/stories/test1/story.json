@@ -1,0 +1,109 @@
+{
+    "root_action": "a0",
+    "values_set": {
+        "pt0": {
+            "EN": "azione 0"
+        },
+        "pt1": {
+            "EN": "azione 1"
+        },
+        "pt2": {
+            "EN": "azione 2"
+        },
+        "pt3": {
+            "EN": "azione 3"
+        },
+        "pt4": {
+            "EN": "azione 4"
+        },
+        "pt5": {
+            "EN": "azione 5"
+        },
+        "t0": {
+            "EN": "Viene fatta l'azione 0"
+        },
+        "t1": {
+            "EN": "Viene fatta l'azione 1"
+        },
+        "t2": {
+            "EN": "Viene fatta l'azione 2"
+        },
+        "t3": {
+            "EN": "Viene fatta l'azione 3"
+        },
+        "t4": {
+            "EN": "Viene fatta l'azione 4"
+        },
+        "t5": {
+            "EN": "Viene fatta l'azione 5"
+        }
+    },
+    "atoms": {
+        "gg1": false,
+        "gg2": false,
+        "at0": false
+    },
+    "goal": [
+                [ "atom","gg2",true ],
+                [ "atom","gg1",true ]
+            ],
+    "actions": {
+        "a0": {
+            "nondeterministic": false,
+            "pretext": "pt0",
+            "text": "t0",
+            "preconditions": {},
+            "effects": {
+                "at0": true
+            }
+        },
+        "a1": {
+            "nondeterministic": true,
+            "pretext": "pt1",
+            "text": "t1",
+            "preconditions": {
+                "at0": true
+            },
+            "effects": {}
+        },
+        "a2": {
+            "nondeterministic": true,
+            "pretext": "pt2",
+            "text": "t2",
+            "preconditions": {
+                "at0": true
+            },
+            "effects": {}
+        },
+        "a3": {
+            "nondeterministic": false,
+            "pretext": "pt3",
+            "text": "t3",
+            "preconditions": {},
+            "effects": {}
+        },
+        "a4": {
+            "nondeterministic": false,
+            "pretext": "pt4",
+            "text": "t4",
+            "preconditions": {},
+            "effects": {
+                "gg1": true
+            }
+        },
+        "a5": {
+            "nondeterministic": false,
+            "pretext": "pt5",
+            "text": "t5",
+            "preconditions": {},
+            "effects": {
+                "gg2": true
+            }
+        }
+    },
+    "actions_children": {
+        "a0": ["a1","a2"],
+        "a1": ["a3"],
+        "a2": ["a4","a5"]
+    }
+}
