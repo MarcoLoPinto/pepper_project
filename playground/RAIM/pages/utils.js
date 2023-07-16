@@ -65,16 +65,22 @@ class SpeechRecognitionBrowser {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    startListening() {
+    startListening(msTimeout = 6000) {
         return new Promise((resolve, reject) => {
             this.recognition.start();
+            const timeoutId = setTimeout(() => {
+                this.recognition.abort();
+                reject(new Error('Speech recognition timed out'));
+            }, msTimeout);
             this.recognition.onresult = async (event) => {
+                clearTimeout(timeoutId);
                 const transcript = event.results[0][0].transcript;
                 this.stopListening();
                 await this.sleep(200);
                 resolve(transcript);
             };
             this.recognition.onerror = (event) => {
+                clearTimeout(timeoutId);
                 reject(event.error);
             };
         });
@@ -97,20 +103,20 @@ class SpeechRecognitionBrowser {
 }
 
 class LanguageText {
-    constructor(lang, textMapping, onChange = ()=>{}) {
+    constructor(lang, textMapping, onChange = () => { }) {
         this.lang = lang;
         this.textMapping = textMapping;
         this.defaultlang = "en-US";
 
         let createDropDown = true;
-        if(createDropDown) {
+        if (createDropDown) {
             // Create the select element
             var dropdown = document.createElement("select");
             dropdown.setAttribute("id", "languageTextDropdown");
 
             let languages = this.extractLanguages();
 
-            for(let l of languages) {
+            for (let l of languages) {
                 // Create the options
                 let option = document.createElement("option");
                 option.setAttribute("value", l);
