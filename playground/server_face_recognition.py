@@ -58,9 +58,10 @@ class FaceRecognitionServer:
             is_successful=True
             try:
                 self.face_recognition.init_state(
-                    RESIZE_VALUE=self.face_recognition.RESIZE_VALUE if "resize_value" not in action_properties else action_properties["resize_value"], 
-                    UNKNOWN_FACE_THRESHOLD=self.face_recognition.UNKNOWN_FACE_THRESHOLD if "unknown_face_threshold" not in action_properties else action_properties["unknown_face_threshold"],
+                    RESIZE_VALUE=self.face_recognition.RESIZE_VALUE if "resize_value" not in action_properties else int(action_properties["resize_value"]), 
+                    UNKNOWN_FACE_THRESHOLD=self.face_recognition.UNKNOWN_FACE_THRESHOLD if "unknown_face_threshold" not in action_properties else int(action_properties["unknown_face_threshold"]),
                 )
+                print("Setting unknown threshold to:", self.face_recognition.UNKNOWN_FACE_THRESHOLD, "and resize to:", self.face_recognition.RESIZE_VALUE)
             except:
                 is_successful=False
             command_out = command_in.gen_response(is_successful=is_successful)
