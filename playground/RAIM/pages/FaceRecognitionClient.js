@@ -73,5 +73,29 @@ class FaceRecognitionClient {
         });
         return this.RAIMClient.dispatchCommand(command);
     }
+
+    /**
+     * Initializes the face recognition system (must be a request!)
+     *
+     * @param {number} unknown_face_threshold - The number of frames to wait before a possible unknown face is really unknown
+     * @param {number} resize_value - The number of frames to wait before a possible unknown face is really unknown (defaults to 4)
+     * @returns {Promise}
+     */
+    initFaceRecognition(unknown_face_threshold, resize_value = 4) {
+        let command = new RAIMClient.Command({
+            data: {
+                "actions": [{ 
+                    "action_type": "init_face_recognition",
+                    "action_properties": {
+                        "resize_value":resize_value,
+                        "unknown_face_threshold":unknown_face_threshold
+                    }
+                }]
+            },
+            to_client_id: "face_recognition",
+            request: true,
+        });
+        return this.RAIMClient.dispatchCommand(command);
+    }
     
 }

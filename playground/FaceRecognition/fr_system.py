@@ -25,33 +25,37 @@ def face_confidence(face_distance, treshold=0.6):
     return round(confidence_value * 100, 2)
 
 class FaceRecognition:
-    # known faces on faces directory
-    known_face_encodings = []
-    known_face_names = []
-
-    # all faces detected on the frame
-    face_locations = []
-    face_encodings = []
-    
-    # Idea: UNKNOWN_FACE_THRESHOLD
-    # we need to save new faces, but sometimes in a small frame
-    # it could potentially detect a face that is known as unknown.
-    # To prevent it, we add a threshold.
-    # Number of frames to wait before requesting to add an unknown face:
-
-    # Keep track of unknown faces that could be unknown (the key is the index of face_locations and encodings):
-    possible_unknown_faces = {}
-    # Keep track of unknown faces that must be unknown (the value is the index of face_locations and encodings):
-    unknown_faces = {}
-    # Keep track of known faces detected on the frame
-    known_faces = {}
-    # Keep track of frame
-    frame = None
 
     def __init__(self, RESIZE_VALUE = 4, UNKNOWN_FACE_THRESHOLD = 10):
         self.faces_dir = os.path.join( os.path.dirname(os.path.abspath(__file__) ), "faces/")
+        self.init_state(RESIZE_VALUE, UNKNOWN_FACE_THRESHOLD)
+
+    def init_state(self, RESIZE_VALUE = 4, UNKNOWN_FACE_THRESHOLD = 10):
         self.RESIZE_VALUE = RESIZE_VALUE
         self.UNKNOWN_FACE_THRESHOLD = UNKNOWN_FACE_THRESHOLD
+        # known faces on faces directory
+        self.known_face_encodings = []
+        self.known_face_names = []
+
+        # all faces detected on the frame
+        self.face_locations = []
+        self.face_encodings = []
+        
+        # Idea: UNKNOWN_FACE_THRESHOLD
+        # we need to save new faces, but sometimes in a small frame
+        # it could potentially detect a face that is known as unknown.
+        # To prevent it, we add a threshold.
+        # Number of frames to wait before requesting to add an unknown face:
+
+        # Keep track of unknown faces that could be unknown (the key is the index of face_locations and encodings):
+        self.possible_unknown_faces = {}
+        # Keep track of unknown faces that must be unknown (the value is the index of face_locations and encodings):
+        self.unknown_faces = {}
+        # Keep track of known faces detected on the frame
+        self.known_faces = {}
+        # Keep track of frame
+        self.frame = None
+
         self.encode_faces()
 
     def encode_faces(self):

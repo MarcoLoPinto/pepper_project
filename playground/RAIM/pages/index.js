@@ -161,7 +161,7 @@ class App {
     async initFaceRecognition() {
         this.console.log("Face recognition connected.");
         try {
-            await this.faceRecognition.setUnknownFaceThreshold(this.unknown_face_threshold, true);
+            await this.faceRecognition.initFaceRecognition(this.unknown_face_threshold);
             this.console.log("Starting camera service...");
             await this.startCamera();
         } catch (error) {
@@ -295,7 +295,7 @@ class App {
     }
 
     async listenerFaceRecognition(command) {
-        this.console.log("command:",command);
+        // this.console.log("command:",command);
         if (["known_faces", "cropped_unknown_faces"].every(key => command.data.hasOwnProperty(key))) {
             let known_faces_names = Object.keys(command.data["known_faces"]);
             // Threshold for the chosen one
