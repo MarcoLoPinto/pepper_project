@@ -2,40 +2,40 @@
     "root_action": "a0",
     "values_set": {
         "pt0": {
-            "EN": "azione 0"
+            "en-US": "azione 0"
         },
         "pt1": {
-            "EN": "azione 1"
+            "en-US": "azione 1"
         },
         "pt2": {
-            "EN": "azione 2"
+            "en-US": "azione 2"
         },
         "pt3": {
-            "EN": "azione 3"
+            "en-US": "azione 3"
         },
         "pt4": {
-            "EN": "azione 4"
+            "en-US": "azione 4"
         },
         "pt5": {
-            "EN": "azione 5"
+            "en-US": "azione 5"
         },
         "t0": {
-            "EN": "Viene fatta l'azione 0"
+            "en-US": "Vien-USe fatta l'azione 0"
         },
         "t1": {
-            "EN": "Viene fatta l'azione 1"
+            "en-US": "Vien-USe fatta l'azione 1"
         },
         "t2": {
-            "EN": "Viene fatta l'azione 2"
+            "en-US": "Vien-USe fatta l'azione 2"
         },
         "t3": {
-            "EN": "Viene fatta l'azione 3"
+            "en-US": "Vien-USe fatta l'azione 3"
         },
         "t4": {
-            "EN": "Viene fatta l'azione 4"
+            "en-US": "Vien-USe fatta l'azione 4"
         },
         "t5": {
-            "EN": "Viene fatta l'azione 5"
+            "en-US": "Vien-USe fatta l'azione 5"
         }
     },
     "atoms": {
@@ -107,7 +107,7 @@
             "mood": "happy"
         }
     },
-    "actions_children": {
+    "actions_children-US": {
         "a0": ["a1","a2"],
         "a1": ["a3"],
         "a2": ["a4","a5"]

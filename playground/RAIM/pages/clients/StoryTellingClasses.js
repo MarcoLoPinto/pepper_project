@@ -132,7 +132,7 @@ class StoryTellingManager {
  * manager = new StoryTellingManager()
  * ...
  * while(!manager.storyFinished){
- *     {newPrompts, newMoods, nextActions} ) manager.getNewPromptsAndActions()
+ *     {newPrompts, newMoods, nextActions} = await manager.getNewPromptsAndActions()
  *     ...
  *     manager.executeAction(index)
  * }

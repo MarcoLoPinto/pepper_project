@@ -9,6 +9,7 @@ WORKDIR /
 # Install Python 3.10 and the required dependencies
 RUN apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa -y && add-apt-repository universe -y
 RUN apt-get install -y python3.10 python3-pip python3-eventlet
+RUN apt-get install -y time
 # RUN pip3 install --upgrade pip
 RUN apt-get install -y libgl1-mesa-glx
 RUN pip3 install Flask flask-socketio
@@ -19,6 +20,9 @@ RUN pip3 install face_recognition
 RUN pip3 install pyopenssl
 RUN pip3 install websocket-server
 RUN pip3 install websockets
+
+# Link python to python3 for PRP
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Set the default command to run when the container starts
 ADD init.bash /init.bash

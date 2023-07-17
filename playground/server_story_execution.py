@@ -6,6 +6,8 @@ from RAIM.raim_command import Command
 
 import argparse
 
+DIR = os.path.realpath(os.path.dirname(__file__))
+
 # action = {"action_type":str, "action_properties":{}, "is_successful":bool}
 
 class StoryTellingServer:
@@ -31,6 +33,7 @@ class StoryTellingServer:
                 data=action,
                 to_client_id=command_in.from_client_id
             )
+        print(f"Story Telling Server responding to {command_out.to_client_id} with: {command_out.data}")
         self.ipc.dispatch_command(command_out)
 
     def request_listener(self, command: Command):
@@ -99,7 +102,7 @@ class StoryTellingServer:
         story_finished = self.stories_in_execution[story_id]["story_finished"]
 
         # Requesting bot action execution, but no bot actions are available, probably the story is finished
-        if len(next_bot_actions) == 0:
+        if next_bot_actions != None and len(next_bot_actions) == 0:
             self.stories_in_execution[story_id]["story_finished"] = False
             return False # Didn't execute any bot actions on this story
 
@@ -186,7 +189,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Face Recognition server')
     parser.add_argument('--ipc_server_host', type=str, default='localhost', help='IPC server hostname (default: localhost)')
     parser.add_argument('--ipc_server_port', type=int, default=5001, help='IPC server port number (default: 5001)')
-    parser.add_argument('--stories_folder', type=str, default="./stories", help="The path with the stories' folders (default: ./stories)")
+    parser.add_argument('--stories_folder', type=str, default=f"{DIR}/StoryTelling/stories", help="The path with the stories' folders (default: ./stories)")
     parser.add_argument('--debug', type=bool, default=False, help='Print debug infos (default: False)')
     args = vars(parser.parse_args())
 

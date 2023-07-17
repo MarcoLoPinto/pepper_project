@@ -207,12 +207,12 @@ select option {
     font-size: 26px;
 }
 
-.card-chosen-confirmation {
-    background-color: #44d864;
-}
-
 .card-chosen {
     background-color: #dfb838;
+}
+
+.card-chosen-confirmation {
+    background-color: #44d864;
 }
 
 /* MISCELLANEOUS */

@@ -108,7 +108,7 @@ class Story():
             problem_file.write(problem_str)
 
 
-def read_story_file(path, lang="EN") -> Story:
+def read_story_file(path, lang="en-US") -> Story:
     with open(path, "r") as f:
         story_obj = json.load(f)
 
@@ -121,8 +121,8 @@ def read_story_file(path, lang="EN") -> Story:
         val = (list(val_dict.values())+[""])[0]
         if lang in val_dict:
             val = val_dict[lang]
-        elif "EN" in val_dict:
-            val = val_dict["EN"]
+        elif "en-US" in val_dict:
+            val = val_dict["en-US"]
         values_set[val_name] = val
 
     # Extracting the list of atoms
@@ -194,17 +194,17 @@ def generate_boilerplate_story_file(path):
     with open(f"{path}", "w") as file:
         file.write(story_json_template)
 
-# if __name__ == '__main__':
-#     # Parse command-line arguments
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('json_path', help='Path to the json file containing the story')
-#     parser.add_argument('pddl_path', default="", help='Path where to save the pddl domain and problem files')
-#     args = parser.parse_args()
+if __name__ == '__main__':
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('json_path', help='Path to the json file containing the story')
+    parser.add_argument('pddl_path', default="", help='Path where to save the pddl domain and problem files')
+    args = parser.parse_args()
 
-#     story = read_story_file(args.json_path)
-#     domain_str = story.genPDDLDomain()
-#     problem_str = story.genPDDLProblems()
+    story = read_story_file(args.json_path)
+    domain_str = story.genPDDLDomain()
+    problem_str = story.genPDDLProblems()
 
-#     save_path = args.pddl_path if args.pddl_path != "" else os.path.dirname(args.json_path)
-#     story.create_files(domain_str = domain_str, problem_str = problem_str[0], path = save_path)
+    save_path = args.pddl_path if args.pddl_path != "" else os.path.dirname(args.json_path)
+    story.create_files(domain_str = domain_str, problem_str = problem_str[0], path = save_path)
 

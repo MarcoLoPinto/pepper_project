@@ -3,17 +3,28 @@ const prp_title = document.getElementById("prp_title")
 
 
 
-function addCardToContainer(container, content){
+function addCardToContainer(content){
     let card = document.createElement("labels")
     card.classList.add("card")
     card.innerText = content
-    container.appendChild(card)
+    story_card_container.appendChild(card)
 }
 
-function toggleCardAsSelected(container, index){
-    cards = container.querySelectorAll(".card")
+function clearContainer(){
+    story_card_container.innerHTML = ""
+}
+
+function toggleCardAsSelected(index){
+    cards = story_card_container.querySelectorAll(".card")
     cards[index].classList.toggle("card-chosen")
 }
+
+function toggleCardAsConfirmed( index){
+    cards = story_card_container.querySelectorAll(".card")
+    cards[index].classList.toggle("card-chosen-confirmation")
+}
+
+
 
 var lang = "en-US"
 var languageText = new LanguageText(
@@ -78,21 +89,37 @@ var languageText = new LanguageText(
         "PEPPER_START_STORY": {
             "en-US": "Ok, let's begin!",
             "it-IT": "Ok, iniziamo!"
+        },
+        "PEPPER_CHOOSE_STORY_ACTION": {
+            "en-US": "How do you want to proceed? Tell me the action number",
+            "it-IT": "Come vuoi precedere? Dimmi il numero dell'azione"
+        },
+        "PEPPER_CONFIRM_STORY_ACTION": {
+            "en-US": "So the next step is the action number %s?",
+            "it-IT": "Quindi il prossimo passo è l'azione numero %s?"
+        },
+        "PEPPER_ACTION_INDEX_NOT_UNDERSTOOD": {
+            "en-US": "%s is not one of the possible selectable actions, maybe i got it wrong, can you repeat?",
+            "it-IT": "%s non è una delle azioni che puoi selezionare, forse ho capito male, puoi ripetere?"
+        },
+        "PEPPER_STORY_FINISHED": {
+            "en-US": "What an amazing story, so fun and personal! Well. Goodbye",
+            "it-IT": "Che storia fantastica, cosi divertente e personale! Beh. Arrivederci"
         }
     }
 );
 
 const self = {
     languageText,
-    storyTellingManager: new StoryTellingManager(),
+    storyTellingManager: new StoryTellingManager({lang: "en-US"}),
     pepper: new PepperClient({
         onConnect: async () => {
             try {
-                await this.pepper.stand(true);
-                this.console.log("Pepper connected.");
+                await self.pepper.stand(true);
+                console.log("Pepper connected.");
             }
             catch(error) {
-                this.console.error("Something went wrong on the pepper server");
+                console.error("Something went wrong on the pepper server");
             }
         }
     }),
@@ -103,37 +130,35 @@ async function storyGame() {
     // this.routing.goToPage("prp_page");
 
     self.storyTellingManager.reset()
+    clearContainer()
 
-    // "PEPPER_CHOOSE_STORY"
-    // "PEPPER_CONFIRM_STORY"
-    // "PEPPER_STORY_NOT_UNDERSTOOD"
-    // "PEPPER_START_STORY"
-
-    // //Story selection
+    // Story selection
     try {
         let stories = await self.storyTellingManager.listStories()
         let storiesLower = stories.map((s) => s.toLowerCase())
 
         for(let i in stories){
             let storyName = stories[i]
-            addCardToContainer(story_card_container, storyName)
+            addCardToContainer(storyName)
         }
         
+        
         let storyChosen = -1
+        prp_title.innerText = self.languageText.get("PEPPER_CHOOSE_STORY")
+        await self.pepper.sayMove(
+            self.languageText.get("PEPPER_CHOOSE_STORY"), 
+            PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+            true
+        );
         while (storyChosen == -1) {
-            prp_title.innerText = self.languageText.get("PEPPER_CHOOSE_STORY")
-            await self.pepper.sayMove(
-                self.languageText.get("PEPPER_CHOOSE_STORY"), 
-                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                true
-            );
+            
             // let story_name_text = await this.stt.startListening().toLowerCase();
             let selectedStoryNameLower = (await readStt()).toLowerCase()
 
             if(storiesLower.includes(selectedStoryNameLower)){
                 let selectedStoryIndex = storiesLower.indexOf(selectedStoryNameLower)
                 let selectedStoryName = stories[selectedStoryIndex]
-                toggleCardAsSelected(story_card_container, selectedStoryIndex)
+                toggleCardAsSelected(selectedStoryIndex)
                 let confirmationQuestion = self.languageText.get("PEPPER_CONFIRM_STORY").replace('%s', selectedStoryName)
                 prp_title.innerText = confirmationQuestion
                 await self.pepper.sayMove(
@@ -154,7 +179,13 @@ async function storyGame() {
                     storyChosen = selectedStoryIndex
                 }
                 else {
-                    toggleCardAsSelected(story_card_container, selectedStoryIndex)
+                    toggleCardAsSelected(selectedStoryIndex)
+                    prp_title.innerText = self.languageText.get("PEPPER_CHOOSE_STORY")
+                    await self.pepper.sayMove(
+                        self.languageText.get("PEPPER_CHOOSE_STORY"), 
+                        PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                        true
+                    );
                 }
             }
             else {
@@ -165,20 +196,112 @@ async function storyGame() {
                     PepperClient.MOVE_NAMES.confused,
                     true
                 );
-
-                // DEBUG
-                await sleep(2000)
             }
         }
 
-        
+        toggleCardAsConfirmed(storyChosen)
+        let storyNameChosen = stories[storyChosen]
+        await self.storyTellingManager.startStory(storyNameChosen)
+
+        // Story Loop
+        while(!self.storyTellingManager.storyFinished){
+            clearContainer()
+            let {newPrompts, newMoods, nextActions} = await self.storyTellingManager.getNewPromptsAndActions()
+            for (let i = 0; i < newPrompts.length; i++) {
+                let prompt = newPrompts[i];
+                let mood = newMoods[i];
+
+                prp_title.innerText = prompt
+                await self.pepper.sayMove(
+                    prompt, 
+                    mood,
+                    true
+                );
+                await sleep(prompt.length * 50);
+            }
+
+            if(self.storyTellingManager.storyFinished) break;
+
+            for (let i = 0; i < nextActions.length; i++) {
+                let actionPretext = nextActions[i];
+                addCardToContainer(`${i+1}: ${actionPretext}`)
+            }
+
+            let actionChosen = -1
+            let txt = self.languageText.get("PEPPER_CHOOSE_STORY_ACTION")
+            prp_title.innerText = txt
+            await self.pepper.sayMove(
+                txt, 
+                PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                true
+            );
+            while (actionChosen == -1) {
+                
+                // let selectedActionIndexStr = await this.stt.startListening();
+                let selectedActionIndexStr = (await readStt()).toLowerCase()
+                let selectedActionIndex = Number(selectedActionIndexStr)-1
+
+                if (selectedActionIndex <= nextActions.length){
+                    toggleCardAsSelected(selectedActionIndex)
+
+                    txt = self.languageText.get("PEPPER_CONFIRM_STORY_ACTION").replace('%s', selectedActionIndexStr)
+                    prp_title.innerText = txt
+                    await self.pepper.sayMove(
+                        txt, 
+                        PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                        true
+                    );
+                    
+                    // let confirmationResponse = await this.stt.startListening();
+                    let confirmationResponse = await readStt()
+
+                    if (confirmationResponse.toLowerCase() == self.languageText.get("YES").toLowerCase()) {
+                        // await self.pepper.sayMove(
+                        //     self.languageText.get("PEPPER_START_STORY"), 
+                        //     PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                        //     true
+                        // );
+                        actionChosen = selectedActionIndex
+                    }
+                    else {
+                        toggleCardAsSelected(selectedActionIndex)
+                        let txt = self.languageText.get("PEPPER_CHOOSE_STORY_ACTION")
+                        prp_title.innerText = txt
+                        await self.pepper.sayMove(
+                            txt, 
+                            PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                            true
+                        );
+                    }
+                }
+                else {
+                    notUnderstoodQuestion = self.languageText.get("PEPPER_ACTION_INDEX_NOT_UNDERSTOOD").replace('%s', selectedActionIndexStr)
+                    prp_title.innerText = notUnderstoodQuestion
+                    await self.pepper.sayMove(
+                        notUnderstoodQuestion, 
+                        PepperClient.MOVE_NAMES.confused,
+                        true
+                    );
+    
+                    // DEBUG
+                    await sleep(2000)
+                }
+                
+            }
+            
+            toggleCardAsConfirmed(actionChosen)
+            await self.storyTellingManager.executeAction(actionChosen)
+        }
 
 
-
-        
-        
-
-    // Story loop
+        // Story finished, say goodbye
+        let txt = self.languageText.get("PEPPER_STORY_FINISHED")
+        prp_title.innerText = txt
+        await self.pepper.sayMove(
+            txt, 
+            PepperClient.MOVE_NAMES.kisses,
+            true
+        );
         
     } catch (error) {
         self.console.log("An error occurred (propbably no response)");
