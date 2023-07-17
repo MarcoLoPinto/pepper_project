@@ -23,7 +23,7 @@ class StoryTellingClient {
 
     constructor({receiveListener = (command) => {}, onConnect = () => {}, onDisconnect = () => {}}){
         // RAIM Client
-        this.RAIMClient = new RAIMClient("storytellingclient");
+        this.RAIMClient = new RAIMClient("story_telling_client");
         this.RAIMClient.debug = false;
         this.RAIMClient.setCommandListener(receiveListener);
         this.RAIMClient.onDisconnect = onDisconnect;
@@ -36,7 +36,7 @@ class StoryTellingClient {
             data: {
                 "actions": [action.toServerObj()]
             },
-            to_client_id: "story_telling",
+            to_client_id: "story_telling_server",
             request: request,
         });
         return this.RAIMClient.dispatchCommand(command_in)
@@ -79,8 +79,8 @@ class StoryTellingClient {
 
 class StoryTellingManager {
 
-    constructor({lang = "EN", onConnect = () => {}}){
-        this.client = StoryTellingClient({onConnect})
+    constructor({lang = "EN", onConnect = () => {}} = {}){
+        this.client = new StoryTellingClient({onConnect})
         this.lang = lang
         this.storyId = null
         this.promptIndex = 0
@@ -93,7 +93,7 @@ class StoryTellingManager {
     } 
 
     async listStories(){
-        stories = await this.client.listStories().then(this.parseResponse).then(({stories}) => stories)
+        let stories = await this.client.listStories().then(this.parseResponse).then(({stories}) => stories)
         return stories
     }
 
@@ -102,6 +102,7 @@ class StoryTellingManager {
     }
 
     async getNewPromptsAndActions(){
+        if(this.storyId == null) return {}
         let {story_finished, prompts, moods, possible_user_actions} = await this.client.getStoryUntilNow(this.storyId).then(this.parseResponse).then((response) => response)
         this.storyFinished = story_finished
         let newPrompts = prompts.slice(this.promptIndex)
@@ -113,7 +114,15 @@ class StoryTellingManager {
     }
 
     async executeAction(index){
+        if(this.storyId == null) return
         await this.client.executeAction(this.storyId, index)
+    }
+
+    reset(){
+        this.storyId = null
+        this.promptIndex = 0
+        this.storyFinished = false
+        this.nextActions = []
     }
 
 }

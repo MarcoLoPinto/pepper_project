@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PepperTale</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="flex_col_centered">
+        <h2 id="prp_title">What do you choose?</h2>
+        <div class="card-container" id="card-container">
+        </div>
+    </div>
+    <input type="text" id="sttInput" onkeydown="if (event.keyCode == 13) {setStt()}" style="
+    width: 100%;
+    margin: 10px;
+    height: 40px;
+    border-radius: 5px;
+    border: 2px solid grey;">
+    <script>
+        window.sttVal = ""
+        function setStt() {
+            var inputValue = document.getElementById("sttInput").value;
+            window.sttVal = inputValue
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function readStt() {
+            while (window.sttVal == "") {
+                await sleep(250)
+            }
+            retVal = window.sttVal
+            window.sttVal = ""
+            document.getElementById("sttInput").value = ""
+            return retVal
+        }
+    </script>
+
+    <script src="/config.js" defer></script>
+    <script src="/RAIMClient.js" defer></script>
+    <script src="/utils.js" defer></script>
+    <script src="/FaceRecognitionClient.js" defer></script>
+    <script src="/PepperClient.js" defer></script>
+    <script src="/StoryTellingClasses.js" defer></script>
+    <script src="/storyTellingTest.js" defer></script>
+</body>
+
+</html>

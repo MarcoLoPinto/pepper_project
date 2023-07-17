@@ -2,7 +2,7 @@ import json
 import os
 import argparse
 from typing import Dict, Any, List, Tuple
-from story_classes import Action, Atom, Goal
+from .story_classes import Action, Atom, Goal
 
 story_json_template = """
 {
@@ -208,10 +208,3 @@ def generate_boilerplate_story_file(path):
 #     save_path = args.pddl_path if args.pddl_path != "" else os.path.dirname(args.json_path)
 #     story.create_files(domain_str = domain_str, problem_str = problem_str[0], path = save_path)
 
-json_path = "/home/pas/Documents/University/eai/patrizi/InteractiveStorytelling/PDDLs/test1/test1.json"
-story = read_story_file(json_path)
-domain_str = story.genPDDLDomain()
-problem_str = story.genPDDLProblems()
-
-save_path = os.path.dirname(json_path)
-story.create_files(domain_str = domain_str, problem_str = problem_str[-1], path = save_path)

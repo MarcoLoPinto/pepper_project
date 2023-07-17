@@ -58,6 +58,7 @@ class RAIMClient {
 
     constructor(name = "RAIMClient_" + Math.floor(Math.random() * 9000 + 1000)) {
         this.name = name;
+        this.connected = false
         this.generalCommandListener = null;
         this.onConnect = null;
         this.onDisconnect = null;
@@ -78,6 +79,7 @@ class RAIMClient {
 
             this.socket.onopen = () => {
                 this.socket.send(this.name);
+                this.connected = true
                 if (this.onConnect) this.onConnect();
                 resolve()
             };
@@ -90,6 +92,7 @@ class RAIMClient {
             };
 
             this.socket.onclose = () => {
+                this.connected = false
                 if (this.onDisconnect) this.onDisconnect();
             };
         })

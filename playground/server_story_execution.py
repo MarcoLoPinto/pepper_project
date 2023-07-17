@@ -10,11 +10,12 @@ import argparse
 
 class StoryTellingServer:
     def __init__(self, ipc_server_host, ipc_server_port, stories_folder, debug = False, **kwargs) -> None:
-        self.ipc = IPCClient("story_telling")
+        self.ipc = IPCClient("story_telling_server")
         self.stories_folder = stories_folder
         self.stories_in_execution = {}
         self.ipc.debug = debug
         
+        print("Story Telling Server started")
         self.ipc.set_command_listener(self.request_listener)
         self.ipc.connect(host=ipc_server_host, port=ipc_server_port)
 
@@ -189,4 +190,8 @@ if __name__ == '__main__':
     parser.add_argument('--debug', type=bool, default=False, help='Print debug infos (default: False)')
     args = vars(parser.parse_args())
 
-    fr_server = StoryTellingServer(**args)
+    st_server = None
+    try:
+        st_server = StoryTellingServer(**args)
+    except KeyboardInterrupt:
+        st_server.shutdown()
