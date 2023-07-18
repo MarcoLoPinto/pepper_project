@@ -1,115 +1,187 @@
 {
-    "root_action": "a0",
+    "root_action": "ROOT",
     "values_set": {
-        "pt0": {
-            "en-US": "azione 0"
+        "ROOT_pt": {
+            "en-US": ""
         },
-        "pt1": {
-            "en-US": "azione 1"
+        "ROOT_t": {
+            "en-US": "This is a story of a charming little girl named Little Red Riding Hood, adored by everyone, especially her grandmother. Her grandmother gifted her a red velvet cap, which she wore all the time. One day, Little Red Riding Hood's mother asked her to bring a piece of cake and wine to her sick grandmother, and warned her to stay on the path and not break the glass bottle."
         },
-        "pt2": {
-            "en-US": "azione 2"
+        "GOTO_PIAZZA_pt": {
+            "en-US": "She goes to the famous piazza of the village"
         },
-        "pt3": {
-            "en-US": "azione 3"
+        "GOTO_PIAZZA_t": {
+            "en-US": "The little girl decided to disobey her mother and to explore the piazza of the village before going to visit her grandmother."
         },
-        "pt4": {
-            "en-US": "azione 4"
+        "GOTO_MARKET_pt": {
+            "en-US": "She goes to the market of the village"
         },
-        "pt5": {
-            "en-US": "azione 5"
+        "GOTO_MARKET_t": {
+            "en-US": "The little girl decided to disobey her mother and to explore the market of the village before going to visit her grandmother."
         },
-        "t0": {
-            "en-US": "Viene fatta l'azione 0"
+        "GOTO_WOODS_pt": {
+            "en-US": "She enters the woods to reach grandmother's house"
         },
-        "t1": {
-            "en-US": "Viene fatta l'azione 1"
+        "GOTO_WOODS_t": {
+            "en-US": "The little girl decided to enter the woods."
         },
-        "t2": {
-            "en-US": "Viene fatta l'azione 2"
+        "VILLAGE_ENCOUNTER_FRIENDS_pt": {
+            "en-US": ""
         },
-        "t3": {
-            "en-US": "Viene fatta l'azione 3"
+        "VILLAGE_ENCOUNTER_FRIENDS_t": {
+            "en-US": "During her trip on the village, she met some of their friends. She decided to play with them a bit before going to visit her grandmother. One of them said that he saw in the woods a big scary wolf."
         },
-        "t4": {
-            "en-US": "Viene fatta l'azione 4"
+        "VILLAGE_ENCOUNTER_DAD_pt": {
+            "en-US": ""
         },
-        "t5": {
-            "en-US": "Viene fatta l'azione 5"
+        "VILLAGE_ENCOUNTER_DAD_t": {
+            "en-US": "During her trip on the village, she was seen by her father, who ordered her to go to the grandmother's house before it gets dark."
+        },
+        "VILLAGE_ENCOUNTER_HUNTSMAN_pt": {
+            "en-US": ""
+        },
+        "VILLAGE_ENCOUNTER_HUNTSMAN_t": {
+            "en-US": "During her trip on the village, she met an huntsman that was hunting a dangerous wolf. The man said to the little girl to not go around alone when it gets dark. "
+        },
+        "GET_FRIEND_STICK_pt": {
+            "en-US": "Ask to borrow the friends's stick"
+        },
+        "GET_FRIEND_STICK_t": {
+            "en-US": "She asks his friend if she can borrow his sharp stick in order to defend herself if she encounters the scary wolf. he accepts and gives it to the little girl. Satisfied, the little girl decided to enter the woods."
+        },
+        "GET_DAD_KNIFE_pt": {
+            "en-US": "Ask to borrow the dad's knife"
+        },
+        "GET_DAD_KNIFE_t": {
+            "en-US": "She asks his father if she can borrow his knife to cut his grandmother's cake. The dad accepts and gives his favourite one to the little girl. Satisfied, the little girl decided to enter the woods."
+        },
+        "GET_HUNTSMAN_PISTOL_pt": {
+            "en-US": "Ask to borrow the huntsman's pistol"
+        },
+        "GET_HUNTSMAN_PISTOL_t": {
+            "en-US": "She asks the man if she can borrow his pistol in order to defend herself if she encounters the wolf. The man accepts and gives his favourite one to the little girl. Satisfied, the little girl decided to enter the woods."
+        },
+        "WOLF_APPROACH_1_pt": {
+            "en-US": ""
+        },
+        "WOLF_APPROACH_1_t": {
+            "en-US": "A little after entering the woods, a wolf came up to her. He gently greeted her and wished her a good day."
         }
     },
     "atoms": {
-        "gg1": false,
-        "gg2": false,
-        "at0": false
+        "grandma_dead": false,
+        "girl_dead": false,
+        "wolf_dead": false,
+
+        "friend_stick": false,
+        "dad_knife": false,
+        "huntsman_pistol": false
     },
     "goal": [
-                [ "atom","gg2",true ],
-                [ "atom","gg1",true ]
+                [ "atom","grandma_dead",true ],
+                [ "atom","girl_dead",true ],
+                [ "atom","wolf_dead",true ]
             ],
     "actions": {
-        "a0": {
+        "ROOT": {
             "nondeterministic": false,
-            "pretext": "pt0",
-            "text": "t0",
+            "pretext": "ROOT_pt",
+            "text": "ROOT_t",
             "preconditions": {},
-            "effects": {
-                "at0": true
-            },
+            "effects": {},
             "mood": "happy"
         },
-        "a1": {
+        "GOTO_PIAZZA": {
             "nondeterministic": true,
-            "pretext": "pt1",
-            "text": "t1",
-            "preconditions": {
-                "at0": true
-            },
+            "pretext": "GOTO_PIAZZA_pt",
+            "text": "GOTO_PIAZZA_t",
+            "preconditions": {},
             "effects": {},
             "mood": "happy"
         },
-        "a2": {
+        "GOTO_MARKET": {
             "nondeterministic": true,
-            "pretext": "pt2",
-            "text": "t2",
-            "preconditions": {
-                "at0": true
-            },
-            "effects": {},
-            "mood": "happy"
-        },
-        "a3": {
-            "nondeterministic": false,
-            "pretext": "pt3",
-            "text": "t3",
+            "pretext": "GOTO_MARKET_pt",
+            "text": "GOTO_MARKET_t",
             "preconditions": {},
             "effects": {},
             "mood": "happy"
         },
-        "a4": {
-            "nondeterministic": false,
-            "pretext": "pt4",
-            "text": "t4",
+        "GOTO_WOODS": {
+            "nondeterministic": true,
+            "pretext": "GOTO_WOODS_pt",
+            "text": "GOTO_WOODS_t",
             "preconditions": {},
-            "effects": {
-                "gg1": true
-            },
+            "effects": {},
             "mood": "happy"
         },
-        "a5": {
+        "VILLAGE_ENCOUNTER_FRIENDS": {
             "nondeterministic": false,
-            "pretext": "pt5",
-            "text": "t5",
+            "pretext": "VILLAGE_ENCOUNTER_FRIENDS_pt",
+            "text": "VILLAGE_ENCOUNTER_FRIENDS_t",
             "preconditions": {},
-            "effects": {
-                "gg2": true
-            },
+            "effects": {},
+            "mood": "happy"
+        },
+        "VILLAGE_ENCOUNTER_DAD": {
+            "nondeterministic": false,
+            "pretext": "VILLAGE_ENCOUNTER_DAD_pt",
+            "text": "VILLAGE_ENCOUNTER_DAD_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "VILLAGE_ENCOUNTER_HUNTSMAN": {
+            "nondeterministic": false,
+            "pretext": "VILLAGE_ENCOUNTER_HUNTSMAN_pt",
+            "text": "VILLAGE_ENCOUNTER_HUNTSMAN_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "GET_FRIEND_STICK": {
+            "nondeterministic": true,
+            "pretext": "GET_FRIEND_STICK_pt",
+            "text": "GET_FRIEND_STICK_t",
+            "preconditions": {},
+            "effects": {"friend_stick": true},
+            "mood": "happy"
+        },
+        "GET_DAD_KNIFE": {
+            "nondeterministic": true,
+            "pretext": "GET_DAD_KNIFE_pt",
+            "text": "GET_DAD_KNIFE_t",
+            "preconditions": {},
+            "effects": {"dad_knife": true},
+            "mood": "happy"
+        },
+        "GET_HUNTSMAN_PISTOL": {
+            "nondeterministic": true,
+            "pretext": "GET_HUNTSMAN_PISTOL_pt",
+            "text": "GET_HUNTSMAN_PISTOL_t",
+            "preconditions": {},
+            "effects": {"huntsman_pistol": true},
+            "mood": "happy"
+        },
+        "WOLF_APPROACH_1": {
+            "nondeterministic": false,
+            "pretext": "WOLF_APPROACH_1_pt",
+            "text": "WOLF_APPROACH_1_t",
+            "preconditions": {},
+            "effects": {},
             "mood": "happy"
         }
     },
     "actions_children": {
-        "a0": ["a1","a2"],
-        "a1": ["a3"],
-        "a2": ["a4","a5"]
+        "ROOT": ["GOTO_PIAZZA","GOTO_MARKET","GOTO_WOODS"],
+        "GOTO_PIAZZA": ["VILLAGE_ENCOUNTER_FRIENDS","VILLAGE_ENCOUNTER_DAD"],
+        "GOTO_MARKET": ["VILLAGE_ENCOUNTER_DAD","VILLAGE_ENCOUNTER_HUNTSMAN"],
+        "VILLAGE_ENCOUNTER_FRIENDS": ["GET_FRIEND_STICK","GOTO_WOODS"],
+        "VILLAGE_ENCOUNTER_DAD": ["GET_DAD_KNIFE","GOTO_WOODS"],
+        "VILLAGE_ENCOUNTER_HUNTSMAN": ["GET_HUNTSMAN_PISTOL","GOTO_WOODS"],
+        "GET_FRIEND_STICK": ["WOLF_APPROACH_1"],
+        "GET_DAD_KNIFE": ["WOLF_APPROACH_1"],
+        "GET_HUNTSMAN_PISTOL": ["WOLF_APPROACH_1"],
+        "GOTO_WOODS": ["WOLF_APPROACH_1"]
     }
 }
