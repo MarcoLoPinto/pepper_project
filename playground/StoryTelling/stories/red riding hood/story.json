@@ -20,22 +20,22 @@
             "en-US": "azione 5"
         },
         "t0": {
-            "en-US": "Vien-USe fatta l'azione 0"
+            "en-US": "Viene fatta l'azione 0"
         },
         "t1": {
-            "en-US": "Vien-USe fatta l'azione 1"
+            "en-US": "Viene fatta l'azione 1"
         },
         "t2": {
-            "en-US": "Vien-USe fatta l'azione 2"
+            "en-US": "Viene fatta l'azione 2"
         },
         "t3": {
-            "en-US": "Vien-USe fatta l'azione 3"
+            "en-US": "Viene fatta l'azione 3"
         },
         "t4": {
-            "en-US": "Vien-USe fatta l'azione 4"
+            "en-US": "Viene fatta l'azione 4"
         },
         "t5": {
-            "en-US": "Vien-USe fatta l'azione 5"
+            "en-US": "Viene fatta l'azione 5"
         }
     },
     "atoms": {
@@ -107,7 +107,7 @@
             "mood": "happy"
         }
     },
-    "actions_children-US": {
+    "actions_children": {
         "a0": ["a1","a2"],
         "a1": ["a3"],
         "a2": ["a4","a5"]
