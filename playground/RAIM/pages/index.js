@@ -506,10 +506,13 @@ class App {
         this.storyTellingManager.reset();
         this.clearContainer();
         this.routing.goToPage("prp_page");
+        this.console.log("Selecting story!");
         let storyNameChosen = await this.selectStory();
         if(storyNameChosen !== false) {
+            this.console.log("Starting story!");
             let jobExecuted = await this.startStory(storyNameChosen);
             if(jobExecuted !== false) {
+                this.console.log("Ending story!");
                 // Story finished, say goodbye
                 let txt = self.languageText.get("PEPPER_STORY_FINISHED");
                 prp_title.innerText = txt
@@ -518,6 +521,8 @@ class App {
                     PepperClient.MOVE_NAMES.kisses,
                     true
                 );
+            } else {
+                this.console.error("Error during story");
             }
         }
         this.routing.goToPage("index_page"); // TODO: to remove?
@@ -582,7 +587,7 @@ class App {
                 }
                 // ...otherwise:
                 else {
-                    let notUnderstoodQuestion = this.languageText.get("PEPPER_STORY_NOT_UNDERSTOOD").replace('%s', selectedStoryNameLower)
+                    let notUnderstoodQuestion = this.languageText.get("PEPPER_STORY_NOT_UNDERSTOOD").replace('%s', selectedStoryNameLower);
                     prp_title.innerText = notUnderstoodQuestion
                     await this.pepper.sayMove(
                         notUnderstoodQuestion, 
@@ -610,18 +615,19 @@ class App {
         return storyNameChosen;
     }
 
-    async startStory() {
+    async startStory(storyNameChosen) {
         // Starting the story
         try {
             await this.storyTellingManager.startStory(storyNameChosen);
         } catch (error) {
-            this.console.log("Error in starting the story:",error);
+            this.console.error("Error in starting the story:",error);
             return false;
         }
+        this.console.log("Starting story loop...");
         // Story Loop
         while(!this.storyTellingManager.storyFinished){
             this.clearContainer();
-            let {newPrompts, newMoods, nextActions} = await this.storyTellingManager.getNewPromptsAndActions()
+            let {newPrompts, newMoods, nextActions} = await this.storyTellingManager.getNewPromptsAndActions();
                 .catch(()=>{
                     this.console.log("Error in gathering new prompts:",error);
                     return false;
@@ -724,16 +730,16 @@ class App {
         story_card_container.innerHTML = ""
     }
     setCardAsUnselected(index){
-        cards = story_card_container.querySelectorAll(".card");
+        let cards = story_card_container.querySelectorAll(".card");
         cards[index].classList.remove("card-chosen", "card-chosen-confirmation");
     }
     setCardAsSelected(index){
-        cards = story_card_container.querySelectorAll(".card");
+        let cards = story_card_container.querySelectorAll(".card");
         cards[index].classList.remove("card-chosen", "card-chosen-confirmation");
         cards[index].classList.add("card-chosen");
     }
     setCardAsConfirmed(index){
-        cards = story_card_container.querySelectorAll(".card");
+        let cards = story_card_container.querySelectorAll(".card");
         cards[index].classList.remove("card-chosen", "card-chosen-confirmation");
         cards[index].classList.add("card-chosen-confirmation");
     }

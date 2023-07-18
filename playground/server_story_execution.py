@@ -10,6 +10,38 @@ DIR = os.path.realpath(os.path.dirname(__file__))
 
 # action = {"action_type":str, "action_properties":{}, "is_successful":bool}
 
+# ####### Functions to help story selection via speech-to-text #######
+
+# def filename_to_name(filename: str) -> str:
+#     """Convert the unserscore-separated name to a lowercase name
+
+#     Args:
+#         filename (str): unserscore-separated name
+
+#     Returns:
+#         str: lowercase name
+#     """
+#     name_parts = filename.split('.')[0].split('_')
+#     name = ' '.join([part.lower() for part in name_parts])
+#     return name
+
+# def name_to_filename(name: str, extension = "") -> str:
+#     """Convert the lowercase name to a unserscore-separated name
+
+#     Args:
+#         name (str): the lowercase name of the story
+
+#     Returns:
+#         str: unserscore-separated name
+#     """
+#     # Convert the name to lowercase and replace spaces with underscores
+#     filename = name.lower().replace(' ', '_')
+#     # Add the file extension
+#     filename += ('.'+extension) if extension != "" else ""
+#     return filename
+
+# ####### ###################################################### #######
+
 class StoryTellingServer:
     def __init__(self, ipc_server_host, ipc_server_port, stories_folder, debug = False, **kwargs) -> None:
         self.ipc = IPCClient("story_telling_server")
