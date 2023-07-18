@@ -627,7 +627,7 @@ class App {
         // Story Loop
         while(!this.storyTellingManager.storyFinished){
             this.clearContainer();
-            let {newPrompts, newMoods, nextActions} = await this.storyTellingManager.getNewPromptsAndActions();
+            let {newPrompts, newMoods, nextActions} = await this.storyTellingManager.getNewPromptsAndActions()
                 .catch(()=>{
                     this.console.log("Error in gathering new prompts:",error);
                     return false;
