@@ -514,9 +514,9 @@ class App {
             if(jobExecuted !== false) {
                 this.console.log("Ending story!");
                 // Story finished, say goodbye
-                let txt = self.languageText.get("PEPPER_STORY_FINISHED");
+                let txt = this.languageText.get("PEPPER_STORY_FINISHED");
                 prp_title.innerText = txt
-                await self.pepper.sayMove(
+                await this.pepper.sayMove(
                     txt, 
                     PepperClient.MOVE_NAMES.kisses,
                     true
@@ -649,7 +649,7 @@ class App {
             // Show the new actions to the user:
             for (let i = 0; i < nextActions.length; i++) {
                 let actionPretext = nextActions[i];
-                addCardToContainer(`${i+1}: ${actionPretext}`)
+                this.addCardToContainer(`${i+1}: ${actionPretext}`);
             }
 
             // Choose action loop:
@@ -668,7 +668,7 @@ class App {
                     let selectedActionIndex = Number(selectedActionIndexStr)-1;
                     // If the action selected is one of the proposed...
                     if(selectedActionIndex <= nextActions.length){
-                        this.setCardAsSelected(selectedStoryIndex);
+                        this.setCardAsSelected(selectedActionIndex);
                         // Pepper asks if the action selected is the correct one
                         let confirmationQuestion = this.languageText.get("PEPPER_CONFIRM_STORY_ACTION").replace('%s', selectedActionIndexStr);
                         prp_title.innerText = confirmationQuestion;
@@ -683,7 +683,7 @@ class App {
                             actionChosen = selectedActionIndex;
                         }
                         else {
-                            this.setCardAsUnselected(selectedStoryIndex);
+                            this.setCardAsUnselected(selectedActionIndex);
                         }
                     }
                     // ...otherwise:
@@ -712,7 +712,7 @@ class App {
     
             }
             // Action selected, go on...
-            this.setCardAsConfirmed(selectedStoryIndex);
+            this.setCardAsConfirmed(actionChosen);
             await this.storyTellingManager.executeAction(actionChosen);
         }
         
