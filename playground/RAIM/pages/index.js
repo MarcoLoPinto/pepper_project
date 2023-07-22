@@ -231,8 +231,8 @@ class App {
         return userObject;
     }
 
-    formatUser(name, age, sex) {
-        return `${name}#${age}#${sex}`;
+    formatUser(name, age = undefined, sex = undefined) {
+        return `${name}${age != undefined ? "#"+age : ""}${sex != undefined ? "#"+sex : ""}`;
     }
 
     async initFaceRecognition() {
