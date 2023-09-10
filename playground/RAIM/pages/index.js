@@ -41,6 +41,10 @@ class App {
                     "en-US": "no",
                     "it-IT": "no"
                 },
+                "AND": {
+                    "en-US": "and",
+                    "it-IT": "e"
+                },
                 "DETECT_NEW_FACES": {
                     "en-US": "I'm detecting new faces!",
                     "it-IT": "Vedo delle possibili facce nuove!"
@@ -78,11 +82,11 @@ class App {
                     "it-IT": "Non è corretto? Allora riproviamo"
                 },
                 "PEPPER_WHAT_IS_FACE_SEX": {
-                    "en-US": "And what is the sex?",
+                    "en-US": "And what is the sex?", // TODO: better something like "Are you a boy or a girl?"
                     "it-IT": "E qual'è il sesso?"
                 },
                 "PEPPER_WHAT_IS_FACE_SEX_CONFIRMATION": {
-                    "en-US": "So the sex is %s, correct?",
+                    "en-US": "So the sex is %s, correct?", // TODO: better something like "So you're a %s, right?"
                     "it-IT": "Quindi il sesso è %s, corretto?"
                 },
                 "PEPPER_WHAT_IS_FACE_SEX_CONFIRMATION_YES": {
@@ -121,6 +125,18 @@ class App {
                     "en-US": "Hello %s! My name is PepperTale! Do you want an explanation of the game?",
                     "it-IT": "Piacere di conoscerti %s! Vuoi che ti spieghi come funziona il gioco?"
                 },
+                "PEPPER_ASK_EXPLAIN_GAME": {
+                    "en-US": "Do you want an explanation of the game?",
+                    "it-IT": "Vuoi che ti spieghi come funziona il gioco?"
+                },
+                "PEPPER_EXPLAIN_GAME": {
+                    "en-US": "I'm an interactive story telling robot. I'm going to propose you some stories. Pick one and we are going to tell it together. During the story, I'll choose an action and you'll choose the next one, until we reach a conclusion",
+                    "it-IT": "Io sono un robot cantastorie interattive. TI proporrò alcune storie. Scegline una e la racconteremo insieme. Durante la storia, io sceglierò un azione e tu quella successiva, finche non raggiungiamo una conclusione"
+                },
+                "PEPPER_STORY_OVER_AGE": {
+                    "en-US": "You said to be %s, so maybe you're too young for %s",
+                    "it-IT": "Hai detto di avere %s anni, quindi forse sei troppo piccolo per %s"
+                },
                 "PEPPER_CHOOSE_STORY": {
                     "en-US": "Choose a story among those",
                     "it-IT": "Scegli una storia tra queste"
@@ -149,9 +165,25 @@ class App {
                     "en-US": "%s is not one of the possible selectable actions, maybe i got it wrong, can you repeat?",
                     "it-IT": "%s non è una delle azioni che puoi selezionare, forse ho capito male, puoi ripetere?"
                 },
+                "PEPPER_ACTION_CHOSEN_BY_PEPPER": {
+                    "en-US": "I'll select an action for you",
+                    "it-IT": "Sceglierò io una azione al tuo posto"
+                },
                 "PEPPER_STORY_FINISHED": {
-                    "en-US": "What an amazing story, so fun and personal! Well. Goodbye",
-                    "it-IT": "Che storia fantastica, cosi divertente e personale! Beh. Arrivederci"
+                    "en-US": "What an amazing story, so fun and personal! Did you like it?",
+                    "it-IT": "Che storia fantastica, cosi divertente e personale! Ti è piaciuta?"
+                },
+                "PEPPER_STORY_LIKED": {
+                    "en-US": "I'm glad to hear it! See you for the next one. Goodbye!",
+                    "it-IT": "Sono felice di sentirlo! Alla prossima storia. Ciao!"
+                },
+                "PEPPER_STORY_NOT_LIKED": {
+                    "en-US": "I'm sorry you didn't like it. I hope the next one will be better. Goodbye!",
+                    "it-IT": "Mi dispiace non ti sia piaciuta. Spero la prossima sia migliore. Ciao!"
+                },
+                "PEPPER_STORY_LIKED_NO_HEAR": {
+                    "en-US": "I couldn't understand your response. I still hope the story was good. Goodbye!",
+                    "it-IT": "Non ho capito la tua risposta. Comunque spero la storia ti sia piaciuta. Ciao!"
                 }
             },
             (lang) => {
@@ -398,8 +430,9 @@ class App {
                     let chosen_one = known_faces_names[0];
                     this.state.chosen_one = known_faces_names[0];
                     if (this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
-                    if (this.state.is_chosen_one_new) await this.talkToNewUser();
-                    else await this.talkToExpertUser();
+                    await this.initialTalkToUser(this.state.is_chosen_one_new);
+                    // if (this.state.is_chosen_one_new) await this.talkToNewUser();
+                    // else await this.talkToExpertUser();
                     this.storyGame();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
@@ -531,56 +564,119 @@ class App {
 
     /* Phase: introduction of the game to the user */
 
-    async talkToExpertUser() {
+    // async talkToExpertUser() {
+    //     this.routing.goToPage("explanation_page");
+    //     // This user has already played check if user wants an explanation!
+    //     let user = this.parseUser(this.state.chosen_one);
+    //     label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
+    //     await this.pepper.sayMove(
+    //         this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name),
+    //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
+    //         true
+    //     );
+    //     while(true){
+    //         try {
+    //             let confirm_text = await this.stt.startListening();
+    //             if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+    //                 this.console.log("Explain game to expert user: response yes")
+    //                 await this.explainGameToUser();
+    //                 return true
+    //             }
+    //             else {
+    //                 this.console.log("Explain game to expert user: response no");
+    //                 return true;
+    //             }
+    //         } catch (error) {
+    //             this.console.error(error);
+    //             label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
+    //             await this.pepper.sayMove(
+    //                 this.languageText.get("PEPPER_NO_HEAR"),
+    //                 PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+    //                 true
+    //             );
+    //             this.sleep(2000);
+
+    //             label_explanation.innerText = this.languageText.get("PEPPER_ASK_EXPLAIN_GAME");
+    //             await this.pepper.sayMove(
+    //                 this.languageText.get("PEPPER_ASK_EXPLAIN_GAME"),
+    //                 PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+    //                 true
+    //             );
+    //         }
+    //     }
+    // }
+
+    // async talkToNewUser() {
+    //     this.routing.goToPage("explanation_page");
+    //     // This user is new, explain the game!
+    //     let user = this.parseUser(this.state.chosen_one);
+    //     label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
+    //     await this.pepper.sayMove(
+    //         this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name),
+    //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
+    //         true
+    //     );
+    //     await this.explainGameToUser();
+    //     return true;
+    // }
+
+    async initialTalkToUser(newUser){
         this.routing.goToPage("explanation_page");
         // This user has already played check if user wants an explanation!
         let user = this.parseUser(this.state.chosen_one);
-        label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
-        await this.pepper.sayMove(
-            this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name),
-            PepperClient.MOVE_NAMES.fancyRightArmCircle,
-            true
-        );
-        try {
-            let confirm_text = await this.stt.startListening();
-            if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
-                this.console.log("EXPLAIN GAME TO EXPERT USER")
-                await this.explainGameToUser();
-            }
-            else {
-                this.console.log("EXPLAIN GAME TO EXPERT USER RESPONSE NO");
-                return true;
-            }
-        } catch (error) {
-            this.console.error(error);
-            label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
-            await this.pepper.sayMove(
-                this.languageText.get("PEPPER_NO_HEAR"),
-                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                true
-            );
-            await this.talkToExpertUser();
+        let txt = ""
+        if(newUser){
+            txt = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
         }
-
-        return true;
-    }
-
-    async talkToNewUser() {
-        this.routing.goToPage("explanation_page");
-        // This user is new, explain the game!
-        let user = this.parseUser(this.state.chosen_one);
-        label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
+        else {
+            txt = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
+        }
+        label_explanation.innerText = txt
         await this.pepper.sayMove(
-            this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name),
+            txt,
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
             true
         );
-        await this.explainGameToUser();
-        return true;
+        while(true){
+            try {
+                let confirm_text = await this.stt.startListening();
+                if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+                    this.console.log("Explain game to user: response yes")
+                    await this.explainGameToUser();
+                    return true
+                }
+                else {
+                    this.console.log("Explain game to user: response no");
+                    return true;
+                }
+            } catch (error) {
+                this.console.error(error);
+                label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
+                await this.pepper.sayMove(
+                    this.languageText.get("PEPPER_NO_HEAR"),
+                    PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                    true
+                );
+                this.sleep(2000);
+
+                label_explanation.innerText = this.languageText.get("PEPPER_ASK_EXPLAIN_GAME");
+                await this.pepper.sayMove(
+                    this.languageText.get("PEPPER_ASK_EXPLAIN_GAME"),
+                    PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                    true
+                );
+            }
+        }
     }
 
     async explainGameToUser() {
-        // TODO: This user wants an explaination!
+        let txt = this.languageText.get("PEPPER_EXPLAIN_GAME");
+        label_explanation.innerText = txt;
+        await this.pepper.sayMove(
+            txt,
+            PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+            true
+        );
     }
 
     /* Phase: the game! */
@@ -597,14 +693,54 @@ class App {
             if (jobExecuted !== false) {
                 this.console.log("Ending story!");
                 // Story finished
-                //TODO: ask for story evaluation ("was it good?")
                 let txt = this.languageText.get("PEPPER_STORY_FINISHED");
                 prp_title.innerText = txt
                 await this.pepper.sayMove(
                     txt,
-                    PepperClient.MOVE_NAMES.kisses,
+                    PepperClient.MOVE_NAMES.excited,
                     true
                 );
+
+                try {
+                    let confirm_text = await this.stt.startListening();
+                    if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+                        let txt = this.languageText.get("PEPPER_STORY_LIKED");
+                        prp_title.innerText = txt
+                        await this.pepper.sayMove(
+                            txt,
+                            PepperClient.MOVE_NAMES.excited,
+                            true
+                        );
+                    }
+                    else if (confirm_text.toLowerCase() == this.languageText.get("NO").toLowerCase()){
+                        let txt = this.languageText.get("PEPPER_STORY_NOT_LIKED");
+                        prp_title.innerText = txt
+                        await this.pepper.sayMove(
+                            txt,
+                            PepperClient.MOVE_NAMES.excited,
+                            true
+                        );
+                    }
+                    else {
+                        let txt = this.languageText.get("PEPPER_STORY_LIKED_NO_HEAR");
+                        prp_title.innerText = txt
+                        await this.pepper.sayMove(
+                            txt,
+                            PepperClient.MOVE_NAMES.excited,
+                            true
+                        );
+                    }
+                } catch (error) {
+                    this.console.error(error);
+                    let txt =  this.languageText.get("PEPPER_STORY_LIKED_NO_HEAR");
+                    label_explanation.innerText = txt;
+                    await this.pepper.sayMove(
+                        txt,
+                        PepperClient.MOVE_NAMES.kisses,
+                        true
+                    );
+                    this.sleep(1000);
+                }
             } else {
                 this.console.error("Error during story");
             }
@@ -616,10 +752,12 @@ class App {
     async selectStory() {
         // Gathering the list of available stories
         let stories = [];
+        let storiesOverage = [];
         let storiesLower = [];
+        let user = this.parseUser(this.state.chosen_one);
         try {
-            let user = this.parseUser(this.state.chosen_one);
-            stories = await this.storyTellingManager.listStories(user.age || 150); // 150 years old to say that there is no age limit
+            stories = await this.storyTellingManager.listStories();
+            storiesOverage = await this.storyTellingManager.listStoriesOverage(user.age || 150); // 150 years old to say that there is no age limit
             storiesLower = stories.map((s) => s.toLowerCase());
         } catch (error) {
             this.console.log("Error in gathering stories:", error);
@@ -629,6 +767,20 @@ class App {
         for (let i in stories) {
             let storyName = stories[i];
             this.addCardToContainer(storyName);
+            if(storiesOverage.includes(storyName)){
+                this.setCardAsOverage(i)
+            }
+        }
+        //Saying the overage stories
+        if(storiesOverage.length > 0){
+            storiesOverageStr = storiesOverage.join(", ")
+            let txt = this.languageText.get("PEPPER_STORY_OVER_AGE").replace('%s', user.age).replace('%s', storiesOverageStr);
+            prp_title.innerText = txt
+            await this.pepper.sayMove(
+                txt,
+                PepperClient.MOVE_NAMES.thinking,
+                true
+            );
         }
         // Choose the story loop
         let storyChosen = -1;
@@ -685,7 +837,7 @@ class App {
             catch (error) {
                 this.console.log("An error occurred (propbably no response)");
                 this.console.error(error);
-                cropped_unk_face_text.innerText = this.languageText.get("PEPPER_NO_HEAR");
+                prp_title.innerText = this.languageText.get("PEPPER_NO_HEAR");
                 await this.pepper.sayMove(
                     this.languageText.get("PEPPER_NO_HEAR"),
                     PepperClient.MOVE_NAMES.fancyRightArmCircle,
@@ -788,18 +940,27 @@ class App {
                 catch (error) {
                     this.console.log("An error occurred (propbably no response)");
                     this.console.error(error);
-                    cropped_unk_face_text.innerText = this.languageText.get("PEPPER_NO_HEAR");
+                    prp_title.innerText = this.languageText.get("PEPPER_NO_HEAR");
                     await this.pepper.sayMove(
                         this.languageText.get("PEPPER_NO_HEAR"),
                         PepperClient.MOVE_NAMES.fancyRightArmCircle,
                         true
                     );
-                    await this.sleep(1000); // TODO: check if necessary on tablet
-
+                    
                     // Counting how many times the user didn't respond
                     repeatCount++
                     if(repeatCount > maxRepeatCount){
                         actionChosen = 0
+
+                        prp_title.innerText = this.languageText.get("PEPPER_ACTION_CHOSEN_BY_PEPPER");
+                        await this.pepper.sayMove(
+                            this.languageText.get("PEPPER_ACTION_CHOSEN_BY_PEPPER"),
+                            PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                            true
+                        );
+                    }
+                    else{
+                        await this.sleep(1000); // TODO: check if necessary on tablet
                     }
                 }
 
@@ -835,6 +996,10 @@ class App {
         let cards = story_card_container.querySelectorAll(".card");
         cards[index].classList.remove("card-chosen", "card-chosen-confirmation");
         cards[index].classList.add("card-chosen-confirmation");
+    }
+    setCardAsOverage(index) {
+        let cards = story_card_container.querySelectorAll(".card");
+        cards[index].classList.add("card-overage");
     }
 
 }

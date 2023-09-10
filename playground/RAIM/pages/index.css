@@ -207,6 +207,10 @@ select option {
     font-size: 26px;
 }
 
+.card-overage {
+    background-color: rgb(158, 158, 158);
+}
+
 .card-chosen {
     background-color: #dfb838;
 }
