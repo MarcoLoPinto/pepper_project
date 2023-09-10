@@ -47,8 +47,10 @@ class StoryTellingClient {
         return this.sendAction(action, false);
     }
 
-    listStories(request = true){
-        let action = new StoryTellingClient.StoryAction("story_list")
+    listStories(userAge, request = true){
+        let action = new StoryTellingClient.StoryAction("story_list",{
+            user_age: userAge
+        })
         return this.sendAction(action, request);
     }
 
@@ -92,8 +94,8 @@ class StoryTellingManager {
         return command.data.action_properties
     } 
 
-    async listStories(){
-        let stories = await this.client.listStories().then(this.parseResponse).then(({stories}) => stories)
+    async listStories(userAge){
+        let stories = await this.client.listStories(userAge).then(this.parseResponse).then(({stories}) => stories)
         return stories
     }
 

@@ -118,7 +118,7 @@ def read_story_file(path, lang="en-US") -> Story:
     og_values_set = story_obj["values_set"]
     values_set: Dict[str, str] = {}
     for val_name, val_dict in og_values_set.items():
-        val = (list(val_dict.values())+[""])[0]
+        val = (list(val_dict.values())+[""])[0] # Set the string by default as the first of the list in case the requested language is not present. If the val set is empty, use an empty string
         if lang in val_dict:
             val = val_dict[lang]
         elif "en-US" in val_dict:
@@ -203,8 +203,8 @@ if __name__ == '__main__':
 
     story = read_story_file(args.json_path)
     domain_str = story.genPDDLDomain()
-    problem_str = story.genPDDLProblems()
+    problem_strs = story.genPDDLProblems()
 
     save_path = args.pddl_path if args.pddl_path != "" else os.path.dirname(args.json_path)
-    story.create_files(domain_str = domain_str, problem_str = problem_str[0], path = save_path)
+    story.create_files(domain_str = domain_str, problem_str = problem_strs[0], path = save_path)
 

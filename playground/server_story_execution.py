@@ -1,4 +1,4 @@
-import os, sys, uuid, tempfile
+import os, sys, uuid, tempfile, json
 from StoryTelling.story_parser import read_story_file, Story
 from StoryTelling.get_actions_plan import get_actions_plan
 from RAIM.ipc_client import IPCClient
@@ -78,7 +78,8 @@ class StoryTellingServer:
                 self.shutdown()
 
             if action_type == "story_list":
-                response_action, is_successful = self.list_stories()
+                user_age = action_properties["user_age"]
+                response_action, is_successful = self.list_stories(user_age)
                 self.send_response(command_in=command, action=response_action, is_successful=is_successful)
 
             if action_type == "story_start":
@@ -116,14 +117,25 @@ class StoryTellingServer:
             "possible_user_actions": [act.pretext for act in next_user_actions]
         }
     
-    def list_stories(self):
+    def list_stories(user_age, self):
         stories = [
             folder for folder in os.listdir(self.stories_folder)
             if os.path.isdir(os.path.join(self.stories_folder, folder))
             and os.path.exists(os.path.join(self.stories_folder, folder, "story.json"))
         ]
-        is_successful = True if len(stories)>0 else False
-        action = {"action_type":"story_list", "action_properties":{"stories": stories}, "is_successful":is_successful}
+        filtered_stories = []
+        for story_name in stories:
+            metadata_path = os.path.join(self.stories_folder, story_name, "metadata.json")
+            if not os.path.exists(metadata_path): # No metadata file equals no age limit
+                filtered_stories.append(story_name)
+            else:
+                with open(metadata_path, "r") as f:
+                    metadata = json.load(f)
+                min_age = metadata.get("min_age",0)
+                if user_age > min_age: filtered_stories.append(story_name)
+
+        is_successful = True if len(filtered_stories)>0 else False
+        action = {"action_type":"story_list", "action_properties":{"stories": filtered_stories}, "is_successful":is_successful}
         return action, is_successful
     
     def execute_bot_action(self, story_id):

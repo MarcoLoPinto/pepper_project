@@ -232,7 +232,7 @@ class App {
     }
 
     formatUser(name, age = undefined, sex = undefined) {
-        return `${name}${age != undefined ? "#"+age : ""}${sex != undefined ? "#"+sex : ""}`;
+        return `${name}${age != undefined ? "#"+age : ""}${sex != undefined ? "#"+sex : ""}`; // TODO: if age=undefined but sex isn't, the file name will not be correctly parsed by parseUser (TIP: put a default non numerica value, like undefined or null)
     }
 
     async initFaceRecognition() {
@@ -596,7 +596,8 @@ class App {
             let jobExecuted = await this.startStory(storyNameChosen);
             if (jobExecuted !== false) {
                 this.console.log("Ending story!");
-                // Story finished, say goodbye
+                // Story finished
+                //TODO: ask for story evaluation ("was it good?")
                 let txt = this.languageText.get("PEPPER_STORY_FINISHED");
                 prp_title.innerText = txt
                 await this.pepper.sayMove(
@@ -617,7 +618,8 @@ class App {
         let stories = [];
         let storiesLower = [];
         try {
-            stories = await this.storyTellingManager.listStories();
+            let user = this.parseUser(this.state.chosen_one);
+            stories = await this.storyTellingManager.listStories(user.age || 150); // 150 years old to say that there is no age limit
             storiesLower = stories.map((s) => s.toLowerCase());
         } catch (error) {
             this.console.log("Error in gathering stories:", error);
@@ -737,6 +739,8 @@ class App {
 
             // Choose action loop:
             let actionChosen = -1;
+            let maxRepeatCount = 3;
+            let repeatCount = 0;
             while (actionChosen == -1) {
                 try {
                     // Pepper asks to user which action to select and the user responds
@@ -791,6 +795,12 @@ class App {
                         true
                     );
                     await this.sleep(1000); // TODO: check if necessary on tablet
+
+                    // Counting how many times the user didn't respond
+                    repeatCount++
+                    if(repeatCount > maxRepeatCount){
+                        actionChosen = 0
+                    }
                 }
 
             }
