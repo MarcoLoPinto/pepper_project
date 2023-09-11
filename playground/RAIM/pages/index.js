@@ -430,9 +430,9 @@ class App {
                     let chosen_one = known_faces_names[0];
                     this.state.chosen_one = known_faces_names[0];
                     if (this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
-                    // await this.initialTalkToUser(this.state.is_chosen_one_new);
-                    if (this.state.is_chosen_one_new) await this.talkToNewUser();
-                    else await this.talkToExpertUser();
+                    await this.initialTalkToUser(this.state.is_chosen_one_new);
+                    // if (this.state.is_chosen_one_new) await this.talkToNewUser();
+                    // else await this.talkToExpertUser();
                     this.storyGame();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
