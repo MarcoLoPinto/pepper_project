@@ -129,10 +129,37 @@ class App {
                     "en-US": "Do you want an explanation of the game?",
                     "it-IT": "Vuoi che ti spieghi come funziona il gioco?"
                 },
-                "PEPPER_EXPLAIN_GAME": {
-                    "en-US": "I'm an interactive story telling robot. I'm going to propose you some stories. Pick one and we are going to tell it together. During the story, I'll choose an action and you'll choose the next one, until we reach a conclusion",
-                    "it-IT": "Io sono un robot cantastorie interattive. TI proporrò alcune storie. Scegline una e la racconteremo insieme. Durante la storia, io sceglierò un azione e tu quella successiva, finche non raggiungiamo una conclusione"
+
+                "PEPPER_EXPLAIN_GAME_0": {
+                    "en-US": "I'm an interactive story telling robot.",
+                    "it-IT": "Io sono un robot cantastorie interattive."
                 },
+                "PEPPER_EXPLAIN_GAME_1": {
+                    "en-US": "I'm going to propose you some stories.",
+                    "it-IT": "Ti proporrò alcune storie."
+                },
+                "PEPPER_EXPLAIN_GAME_2": {
+                    "en-US": "Pick one and we are going to tell it together.",
+                    "it-IT": "Scegline una e la racconteremo insieme."
+                },
+                "PEPPER_EXPLAIN_GAME_3": {
+                    "en-US": "During the story, I'll choose an action and you'll choose the next one.",
+                    "it-IT": "Durante la storia, io sceglierò un azione e tu quella successiva."
+                },
+                "PEPPER_EXPLAIN_GAME_4": {
+                    "en-US": "The game ends when we reach one of the possible endings of the story.",
+                    "it-IT": "Il gioco finisce quando raggiungiamo un possibile finale della storia."
+                },
+                "PEPPER_EXPLAIN_GAME_5": {
+                    "en-US": "You have the power to shape the course of the story!",
+                    "it-IT": "Hai il potere di cambiare il corso della storia!"
+                },
+                
+                "PEPPER_START_GAME": {
+                    "en-US": "Ok! Let us begin our journey!",
+                    "it-IT": "Ok! Iniziamo il nostro viaggio!"
+                },
+
                 "PEPPER_STORY_OVER_AGE": {
                     "en-US": "You said to be %s, so maybe you're too young for %s",
                     "it-IT": "Hai detto di avere %s anni, quindi forse sei troppo piccolo per %s"
@@ -564,66 +591,66 @@ class App {
 
     /* Phase: introduction of the game to the user */
 
-    async talkToExpertUser() {
-        this.routing.goToPage("explanation_page");
-        // This user has already played check if user wants an explanation!
-        let user = this.parseUser(this.state.chosen_one);
-        label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
-        await this.pepper.sayMove(
-            this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name),
-            PepperClient.MOVE_NAMES.fancyRightArmCircle,
-            true
-        );
-        try {
-            let confirm_text = await this.stt.startListening();
-            if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
-                this.console.log("EXPLAIN GAME TO EXPERT USER")
-                await this.explainGameToUser();
-            }
-            else {
-                this.console.log("EXPLAIN GAME TO EXPERT USER RESPONSE NO");
-                return true;
-            }
-        } catch (error) {
-            this.console.error(error);
-            label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
-            await this.pepper.sayMove(
-                this.languageText.get("PEPPER_NO_HEAR"),
-                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                true
-            );
-            await this.talkToExpertUser();
-        }
+    // async talkToExpertUser() {
+    //     this.routing.goToPage("explanation_page");
+    //     // This user has already played check if user wants an explanation!
+    //     let user = this.parseUser(this.state.chosen_one);
+    //     label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
+    //     await this.pepper.sayMove(
+    //         this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name),
+    //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
+    //         true
+    //     );
+    //     try {
+    //         let confirm_text = await this.stt.startListening();
+    //         if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+    //             this.console.log("EXPLAIN GAME TO EXPERT USER")
+    //             await this.explainGameToUser();
+    //         }
+    //         else {
+    //             this.console.log("EXPLAIN GAME TO EXPERT USER RESPONSE NO");
+    //             return true;
+    //         }
+    //     } catch (error) {
+    //         this.console.error(error);
+    //         label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
+    //         await this.pepper.sayMove(
+    //             this.languageText.get("PEPPER_NO_HEAR"),
+    //             PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+    //             true
+    //         );
+    //         await this.talkToExpertUser();
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
-    async talkToNewUser() {
-        this.routing.goToPage("explanation_page");
-        // This user is new, explain the game!
-        let user = this.parseUser(this.state.chosen_one);
-        label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
-        await this.pepper.sayMove(
-            this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name),
-            PepperClient.MOVE_NAMES.fancyRightArmCircle,
-            true
-        );
-        await this.explainGameToUser();
-        return true;
-    }
+    // async talkToNewUser() {
+    //     this.routing.goToPage("explanation_page");
+    //     // This user is new, explain the game!
+    //     let user = this.parseUser(this.state.chosen_one);
+    //     label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
+    //     await this.pepper.sayMove(
+    //         this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name),
+    //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
+    //         true
+    //     );
+    //     await this.explainGameToUser();
+    //     return true;
+    // }
 
     async initialTalkToUser(newUser){
         this.routing.goToPage("explanation_page");
         // This user has already played check if user wants an explanation!
         let user = this.parseUser(this.state.chosen_one);
-        let txt = ""
+        let txt = "";
         if(newUser){
             txt = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
         }
         else {
             txt = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
         }
-        label_explanation.innerText = txt
+        label_explanation.innerText = txt;
         await this.pepper.sayMove(
             txt,
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
@@ -633,12 +660,24 @@ class App {
             try {
                 let confirm_text = await this.stt.startListening();
                 if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
-                    this.console.log("Explain game to user: response yes")
+                    this.console.log("Explain game to user: response yes");
                     await this.explainGameToUser();
+                    label_explanation.innerText = this.languageText.get("PEPPER_START_GAME");
+                    await this.pepper.sayMove(
+                        this.languageText.get("PEPPER_START_GAME"),
+                        PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                        true
+                    );
                     return true
                 }
                 else {
                     this.console.log("Explain game to user: response no");
+                    label_explanation.innerText = this.languageText.get("PEPPER_START_GAME");
+                    await this.pepper.sayMove(
+                        this.languageText.get("PEPPER_START_GAME"),
+                        PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                        true
+                    );
                     return true;
                 }
             } catch (error) {
@@ -662,13 +701,25 @@ class App {
     }
 
     async explainGameToUser() {
-        let txt = this.languageText.get("PEPPER_EXPLAIN_GAME");
-        label_explanation.innerText = txt;
-        await this.pepper.sayMove(
-            txt,
-            PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-            true
-        );
+        let movements = [
+            PepperClient.MOVE_NAMES.bothArmsBumpInFront, 
+            PepperClient.MOVE_NAMES.excited,
+            PepperClient.MOVE_NAMES.fancyRightArmCircle,
+            PepperClient.MOVE_NAMES.bothArmsBumpInFront,  
+            PepperClient.MOVE_NAMES.fancyRightArmCircle,
+            PepperClient.MOVE_NAMES.excited,
+        ];
+        for(let i = 0; i <= 5; i++){
+            let txt = this.languageText.get(`PEPPER_EXPLAIN_GAME_${i}`);
+            label_explanation.innerText = txt;
+            await this.pepper.sayMove(
+                txt,
+                movements[i % movements.length],
+                true
+            );
+            await this.sleep(500);
+        }
+        
     }
 
     /* Phase: the game! */
