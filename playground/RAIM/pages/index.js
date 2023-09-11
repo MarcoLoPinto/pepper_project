@@ -430,9 +430,9 @@ class App {
                     let chosen_one = known_faces_names[0];
                     this.state.chosen_one = known_faces_names[0];
                     if (this.state.new_faces.includes(chosen_one)) this.state.is_chosen_one_new = true;
-                    await this.initialTalkToUser(this.state.is_chosen_one_new);
-                    // if (this.state.is_chosen_one_new) await this.talkToNewUser();
-                    // else await this.talkToExpertUser();
+                    // await this.initialTalkToUser(this.state.is_chosen_one_new);
+                    if (this.state.is_chosen_one_new) await this.talkToNewUser();
+                    else await this.talkToExpertUser();
                     this.storyGame();
                 }
                 else if (Object.keys(command.data["cropped_unknown_faces"]).length > 0) {
@@ -564,61 +564,53 @@ class App {
 
     /* Phase: introduction of the game to the user */
 
-    // async talkToExpertUser() {
-    //     this.routing.goToPage("explanation_page");
-    //     // This user has already played check if user wants an explanation!
-    //     let user = this.parseUser(this.state.chosen_one);
-    //     label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
-    //     await this.pepper.sayMove(
-    //         this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name),
-    //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
-    //         true
-    //     );
-    //     while(true){
-    //         try {
-    //             let confirm_text = await this.stt.startListening();
-    //             if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
-    //                 this.console.log("Explain game to expert user: response yes")
-    //                 await this.explainGameToUser();
-    //                 return true
-    //             }
-    //             else {
-    //                 this.console.log("Explain game to expert user: response no");
-    //                 return true;
-    //             }
-    //         } catch (error) {
-    //             this.console.error(error);
-    //             label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
-    //             await this.pepper.sayMove(
-    //                 this.languageText.get("PEPPER_NO_HEAR"),
-    //                 PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-    //                 true
-    //             );
-    //             this.sleep(2000);
+    async talkToExpertUser() {
+        this.routing.goToPage("explanation_page");
+        // This user has already played check if user wants an explanation!
+        let user = this.parseUser(this.state.chosen_one);
+        label_explanation.innerText = this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name);
+        await this.pepper.sayMove(
+            this.languageText.get("PEPPER_EXPERT_USER_INTRO").replace('%s', user.name),
+            PepperClient.MOVE_NAMES.fancyRightArmCircle,
+            true
+        );
+        try {
+            let confirm_text = await this.stt.startListening();
+            if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+                this.console.log("EXPLAIN GAME TO EXPERT USER")
+                await this.explainGameToUser();
+            }
+            else {
+                this.console.log("EXPLAIN GAME TO EXPERT USER RESPONSE NO");
+                return true;
+            }
+        } catch (error) {
+            this.console.error(error);
+            label_explanation.innerText = this.languageText.get("PEPPER_NO_HEAR");
+            await this.pepper.sayMove(
+                this.languageText.get("PEPPER_NO_HEAR"),
+                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                true
+            );
+            await this.talkToExpertUser();
+        }
 
-    //             label_explanation.innerText = this.languageText.get("PEPPER_ASK_EXPLAIN_GAME");
-    //             await this.pepper.sayMove(
-    //                 this.languageText.get("PEPPER_ASK_EXPLAIN_GAME"),
-    //                 PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-    //                 true
-    //             );
-    //         }
-    //     }
-    // }
+        return true;
+    }
 
-    // async talkToNewUser() {
-    //     this.routing.goToPage("explanation_page");
-    //     // This user is new, explain the game!
-    //     let user = this.parseUser(this.state.chosen_one);
-    //     label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
-    //     await this.pepper.sayMove(
-    //         this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name),
-    //         PepperClient.MOVE_NAMES.fancyRightArmCircle,
-    //         true
-    //     );
-    //     await this.explainGameToUser();
-    //     return true;
-    // }
+    async talkToNewUser() {
+        this.routing.goToPage("explanation_page");
+        // This user is new, explain the game!
+        let user = this.parseUser(this.state.chosen_one);
+        label_explanation.innerText = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
+        await this.pepper.sayMove(
+            this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name),
+            PepperClient.MOVE_NAMES.fancyRightArmCircle,
+            true
+        );
+        await this.explainGameToUser();
+        return true;
+    }
 
     async initialTalkToUser(newUser){
         this.routing.goToPage("explanation_page");
