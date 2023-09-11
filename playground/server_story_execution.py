@@ -147,7 +147,7 @@ class StoryTellingServer:
                 min_age = metadata.get("min_age",0)
                 if user_age < min_age: filtered_stories.append(story_name)
 
-        is_successful = True if len(filtered_stories)>0 else False
+        is_successful = True if len(stories)>0 else False
         action = {"action_type":"story_list_overage", "action_properties":{"stories": filtered_stories}, "is_successful":is_successful}
         return action, is_successful
     
