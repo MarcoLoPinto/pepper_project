@@ -83,12 +83,20 @@ class App {
                     "it-IT": "Non è corretto? Allora riproviamo"
                 },
                 "PEPPER_WHAT_IS_FACE_SEX": {
-                    "en-US": "And what is the sex?", // TODO: better something like "Are you a boy or a girl?"
-                    "it-IT": "E qual'è il sesso?"
+                    "en-US": "Are you a boy or a girl?",
+                    "it-IT": "Sei un ragazzo o una ragazza?"
                 },
                 "PEPPER_WHAT_IS_FACE_SEX_CONFIRMATION": {
-                    "en-US": "So the sex is %s, correct?", // TODO: better something like "So you're a %s, right?"
-                    "it-IT": "Quindi il sesso è %s, corretto?"
+                    "en-US": "So you're a %s, correct?",
+                    "it-IT": "Quindi %s, corretto?"
+                },
+                "PEPPER_SEX_BOY": {
+                    "en-US": "boy",
+                    "it-IT": "ragazzo"
+                },
+                "PEPPER_SEX_GIRL": {
+                    "en-US": "girl",
+                    "it-IT": "ragazza"
                 },
                 "PEPPER_WHAT_IS_FACE_SEX_CONFIRMATION_YES": {
                     "en-US": "Ok, I'm saving the sex then",
@@ -98,9 +106,23 @@ class App {
                     "en-US": "The sex is not correct? Let's retry",
                     "it-IT": "Non è corretto? Allora riproviamo"
                 },
+
+                "PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION": {
+                    "en-US": "So you said %s, correct?",
+                    "it-IT": "Quindi hai detto %s, corretto?"
+                },
+                "PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_YES": {
+                    "en-US": "Ok, I'm saving this info then",
+                    "it-IT": "Ok, allora mi salvo questa informazione"
+                },
+                "PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_NO": {
+                    "en-US": "It's not not correct? Let's retry",
+                    "it-IT": "Non e' corretto? Allora riproviamo"
+                },
+
                 "PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION": {
-                    "en-US": "So the name is %s, the sex is %s and the age is %s, correct?",
-                    "it-IT": "Quindi il nome è %s, il sesso è %s e l'età è %s, corretto?"
+                    "en-US": "So the name is %s, you are a %s and the age is %s, correct?",
+                    "it-IT": "Quindi il nome è %s, sei un %s e l'età è %s, corretto?"
                 },
                 "PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION_YES": {
                     "en-US": "Ok, I'm saving these infos then",
@@ -453,6 +475,7 @@ class App {
                     );
                     pepper_feedback.default();
                     this.console.log("Pepper lost the chosen one!");
+                    location.reload();
                 }
             }
             else {
@@ -502,6 +525,70 @@ class App {
         }
         await this.setNewFaceName(command, objList, 0);
     }
+    async getFaceInfo(
+        languageTextPhrase, pepperClientMoveName, 
+        languageTextConfirmation, 
+        languageTextConfirmationYes, languageTextConfirmationNo
+    ){
+        while(true){
+            try {
+                // Getting the info (name or age or sex)
+                cropped_unk_face_text.innerText = this.languageText.get(languageTextPhrase)
+                pepper_feedback.speak();
+                await this.pepper.sayMove(
+                    this.languageText.get(languageTextPhrase),
+                    pepperClientMoveName,
+                    true
+                );
+                pepper_feedback.hear();
+                let info_text = await this.stt.startListening();
+                
+                let conf_text = this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION").replace('%s', info_text);
+                cropped_unk_face_text.innerText = conf_text;
+                pepper_feedback.speak();
+                await this.pepper.sayMove(
+                    conf_text,
+                    PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                    true
+                );
+                pepper_feedback.hear();
+                let confirm_text = await this.stt.startListening();
+    
+                if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
+                    pepper_feedback.speak();
+                    cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_YES");
+                    await this.pepper.sayMove(
+                        this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_YES"),
+                        PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                        true
+                    );
+                    pepper_feedback.default();
+                    return info_text;
+                }
+                else {
+                    pepper_feedback.speak();
+                    cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_NO");
+                    await this.pepper.sayMove(
+                        this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_NO"),
+                        PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+                        true
+                    );
+                    pepper_feedback.default();
+                }
+            } catch (error) {
+                this.console.log("An error occurred (propbably no response)");
+                this.console.error(error);
+                cropped_unk_face_text.innerText = this.languageText.get("PEPPER_NO_HEAR");
+                pepper_feedback.no_hear();
+                await this.pepper.sayMove(
+                    this.languageText.get("PEPPER_NO_HEAR"),
+                    PepperClient.MOVE_NAMES.fancyRightArmCircle,
+                    true
+                );
+                await this.sleep(500);
+            }
+        }
+    }
     async setNewFaceName(command, objList, idx) {
         if (objList.length <= idx) {
             // All names have been done, send them to face recognition...
@@ -524,72 +611,32 @@ class App {
 
         try {
             // Getting the name
-            cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_NAME")
-            pepper_feedback.speak();
-            await this.pepper.sayMove(
-                this.languageText.get("PEPPER_WHAT_IS_FACE_NAME"),
-                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                true
+            let name_text = await this.getFaceInfo(
+                "PEPPER_WHAT_IS_FACE_NAME", PepperClient.MOVE_NAMES.bothArmsBumpInFront,
             );
-            pepper_feedback.hear();
-            let name_text = await this.stt.startListening();
 
             // Getting the age
-            cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_AGE")
-            pepper_feedback.speak();
-            await this.pepper.sayMove(
-                this.languageText.get("PEPPER_WHAT_IS_FACE_AGE"),
-                PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                true
+            let age_text = await await this.getFaceInfo(
+                "PEPPER_WHAT_IS_FACE_AGE", PepperClient.MOVE_NAMES.bothArmsBumpInFront,
             );
-            pepper_feedback.hear();
-            let age_text = await this.stt.startListening();
 
             // Getting the sex
-            cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_SEX")
+            let sex_text = await this.getFaceInfo(
+                "PEPPER_WHAT_IS_FACE_SEX", PepperClient.MOVE_NAMES.bothArmsBumpInFront,
+            );
+            
             pepper_feedback.speak();
+            cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION_YES");
             await this.pepper.sayMove(
-                this.languageText.get("PEPPER_WHAT_IS_FACE_SEX"),
+                this.languageText.get("PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION_YES"),
                 PepperClient.MOVE_NAMES.bothArmsBumpInFront,
                 true
             );
-            pepper_feedback.hear();
-            let sex_text = await this.stt.startListening();
-            
-            let conf_text = this.languageText.get("PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION")
-                .replace('%s', name_text).replace('%s', sex_text).replace('%s', age_text)
-            cropped_unk_face_text.innerText = conf_text
-            pepper_feedback.speak();
-            await this.pepper.sayMove(
-                conf_text,
-                PepperClient.MOVE_NAMES.fancyRightArmCircle,
-                true
-            );
-            pepper_feedback.hear();
-            let confirm_text = await this.stt.startListening();
+            pepper_feedback.default();
+            this.state.cropped_unknown_faces[key] = this.formatUser(name_text,age_text,sex_text);
+            this.state.new_faces.push(name_text);
+            await this.setNewFaceName(command, objList, idx + 1);
 
-            if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
-                pepper_feedback.speak();
-                await this.pepper.sayMove(
-                    this.languageText.get("PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION_YES"),
-                    PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                    true
-                );
-                pepper_feedback.default();
-                this.state.cropped_unknown_faces[key] = this.formatUser(name_text,age_text,sex_text);
-                this.state.new_faces.push(name_text);
-                await this.setNewFaceName(command, objList, idx + 1);
-            }
-            else {
-                pepper_feedback.speak();
-                await this.pepper.sayMove(
-                    this.languageText.get("PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION_NO"),
-                    PepperClient.MOVE_NAMES.bothArmsBumpInFront,
-                    true
-                );
-                pepper_feedback.default();
-                await this.setNewFaceName(command, objList, idx);
-            }
         } catch (error) {
             this.console.log("An error occurred (propbably no response)");
             this.console.error(error);
@@ -765,6 +812,7 @@ class App {
                 // Story finished
                 let txt = this.languageText.get("PEPPER_STORY_FINISHED");
                 prp_title.innerText = txt;
+                pepper_feedback.speak();
                 await this.pepper.sayMove(
                     txt,
                     PepperClient.MOVE_NAMES.excited,
@@ -772,44 +820,53 @@ class App {
                 );
 
                 try {
+                    pepper_feedback.hear();
                     let confirm_text = await this.stt.startListening();
                     if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
                         let txt = this.languageText.get("PEPPER_STORY_LIKED");
                         prp_title.innerText = txt
+                        pepper_feedback.speak();
                         await this.pepper.sayMove(
                             txt,
                             PepperClient.MOVE_NAMES.excited,
                             true
                         );
+                        pepper_feedback.default();
                     }
                     else if (confirm_text.toLowerCase() == this.languageText.get("NO").toLowerCase()){
                         let txt = this.languageText.get("PEPPER_STORY_NOT_LIKED");
                         prp_title.innerText = txt
+                        pepper_feedback.speak();
                         await this.pepper.sayMove(
                             txt,
                             PepperClient.MOVE_NAMES.excited,
                             true
                         );
+                        pepper_feedback.default();
                     }
                     else {
                         let txt = this.languageText.get("PEPPER_STORY_LIKED_NO_HEAR");
                         prp_title.innerText = txt
+                        pepper_feedback.no_hear();
                         await this.pepper.sayMove(
                             txt,
                             PepperClient.MOVE_NAMES.excited,
                             true
                         );
+                        pepper_feedback.default();
                     }
                 } catch (error) {
                     this.console.error(error);
                     let txt =  this.languageText.get("PEPPER_STORY_LIKED_NO_HEAR");
                     label_explanation.innerText = txt;
+                    pepper_feedback.no_hear();
                     await this.pepper.sayMove(
                         txt,
                         PepperClient.MOVE_NAMES.kisses,
                         true
                     );
                     this.sleep(1000);
+                    pepper_feedback.default();
                 }
             } else {
                 this.console.error("Error during story");
@@ -856,7 +913,7 @@ class App {
         }
         // Choose the story loop
         let storyChosen = -1;
-        while (storyChosen == -1) {
+        while (storyChosen == -1 && this.state.chosen_one != undefined) {
             try {
                 // Pepper asks to user which stories to select and the user responds
                 prp_title.innerText = this.languageText.get("PEPPER_CHOOSE_STORY");
@@ -957,12 +1014,14 @@ class App {
                 let mood = newMoods[i];
 
                 prp_title.innerText = prompt;
+                pepper_feedback.speak();
                 await this.pepper.sayMove(
                     prompt,
                     mood,
                     true
                 );
                 await this.sleep(prompt.length * 50);
+                pepper_feedback.default();
             }
             // If the story is finished, exit!
             if (this.storyTellingManager.storyFinished) break;
@@ -981,11 +1040,13 @@ class App {
                     // Pepper asks to user which action to select and the user responds
                     let txt = this.languageText.get("PEPPER_CHOOSE_STORY_ACTION");
                     prp_title.innerText = txt;
+                    pepper_feedback.speak();
                     await this.pepper.sayMove(
                         txt,
                         PepperClient.MOVE_NAMES.bothArmsBumpInFront,
                         true
                     );
+                    pepper_feedback.hear();
                     let selectedActionIndexStr = (await this.stt.startListening()).toLowerCase();
                     let selectedActionIndex = Number(selectedActionIndexStr) - 1;
                     // If the action selected is one of the proposed...
@@ -994,11 +1055,13 @@ class App {
                         // Pepper asks if the action selected is the correct one
                         let confirmationQuestion = this.languageText.get("PEPPER_CONFIRM_STORY_ACTION").replace('%s', selectedActionIndexStr);
                         prp_title.innerText = confirmationQuestion;
+                        pepper_feedback.speak();
                         await this.pepper.sayMove(
                             confirmationQuestion,
                             PepperClient.MOVE_NAMES.fancyRightArmCircle,
                             true
                         );
+                        pepper_feedback.hear();
                         let confirmationResponse = await this.stt.startListening();
                         // Checking the YES/NO response
                         if (confirmationResponse.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
@@ -1011,12 +1074,14 @@ class App {
                     // ...otherwise:
                     else {
                         let notUnderstoodQuestion = this.languageText.get("PEPPER_ACTION_INDEX_NOT_UNDERSTOOD").replace('%s', selectedActionIndexStr)
-                        prp_title.innerText = notUnderstoodQuestion
+                        prp_title.innerText = notUnderstoodQuestion;
+                        pepper_feedback.no_hear();
                         await this.pepper.sayMove(
                             notUnderstoodQuestion,
                             PepperClient.MOVE_NAMES.confused,
                             true
                         );
+                        pepper_feedback.default();
                     }
                 }
                 // If the robot does not hear
@@ -1024,23 +1089,27 @@ class App {
                     this.console.log("An error occurred (propbably no response)");
                     this.console.error(error);
                     prp_title.innerText = this.languageText.get("PEPPER_NO_HEAR");
+                    pepper_feedback.no_hear();
                     await this.pepper.sayMove(
                         this.languageText.get("PEPPER_NO_HEAR"),
                         PepperClient.MOVE_NAMES.fancyRightArmCircle,
                         true
                     );
+                    pepper_feedback.default();
                     
                     // Counting how many times the user didn't respond
-                    repeatCount++
+                    repeatCount++;
                     if(repeatCount > maxRepeatCount){
-                        actionChosen = 0
+                        actionChosen = 0;
 
                         prp_title.innerText = this.languageText.get("PEPPER_ACTION_CHOSEN_BY_PEPPER");
+                        pepper_feedback.speak();
                         await this.pepper.sayMove(
                             this.languageText.get("PEPPER_ACTION_CHOSEN_BY_PEPPER"),
                             PepperClient.MOVE_NAMES.fancyRightArmCircle,
                             true
                         );
+                        pepper_feedback.default();
                     }
                     else{
                         await this.sleep(1000); // TODO: check if necessary on tablet
@@ -1058,13 +1127,13 @@ class App {
 
     // Story card functions
     addCardToContainer(content) {
-        let card = document.createElement("labels")
-        card.classList.add("card")
-        card.innerText = content
-        story_card_container.appendChild(card)
+        let card = document.createElement("labels");
+        card.classList.add("card");
+        card.innerText = content;
+        story_card_container.appendChild(card);
     }
     clearContainer() {
-        story_card_container.innerHTML = ""
+        story_card_container.innerHTML = "";
     }
     setCardAsUnselected(index) {
         let cards = story_card_container.querySelectorAll(".card");
