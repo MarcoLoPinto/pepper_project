@@ -10,7 +10,7 @@
     <div id="index_page" class="page">
         <div class="flex_col_centered">
             <h1>PepperTale</h1>
-            <img src="/assets/peppertale_logo.png" id="index_pepper_logo" style="width: 40vh" class="img_pulse" />
+            <img src="/assets/peppertale_logo.png" class="pepper_feeedback img_pulse" style="width: 30vh" />
             <!-- Video captured from camera of the PC/stablet -->
             <video id="video" style="width: 40vh" autoplay></video>
             <!-- Video captured from camera of the PC/stablet (getted from response) -->
@@ -28,10 +28,7 @@
             <img id="cropped_unk_face" style="width: 40vh" />
             <br>
 
-            <div class="mic-container">
-                <div class="mic-outline"></div>
-                <i class="mic"></i>
-            </div>
+            <img src="/assets/peppertale_logo.png" class="pepper_feeedback img_pulse" style="width: 20vh" />
 
             <br>
             <label class="text_m" id="cropped_unk_face_text"></label>
@@ -40,7 +37,7 @@
 
     <div id="explanation_page" class="page">
         <div class="flex_col_centered">
-            <img src="/assets/peppertale_logo.png" id="explanation_pepper_logo" style="width: 40vh" class="img_pulse" />
+            <img src="/assets/peppertale_logo.png" class="pepper_feeedback img_pulse" style="width: 40vh" />
             <label class="text_m" id="label_explanation"></label>
         </div>
     </div>
@@ -54,12 +51,14 @@
                 <label class="card card-chosen-confirmation">Ask to borrow the huntsman's pistol</label>
                 <label class="card">She enters the woods to reach grandmother's house</label> -->
             </div>
+            <img src="/assets/peppertale_logo.png" class="pepper_feeedback img_pulse" style="width: 20vh; position: absolute; top: 40%;" />
         </div>
     </div>
     
     <script src="/config.js" defer></script>
     <script src="/clients/RAIMClient.js" defer></script>
     <script src="/utils.js" defer></script>
+    <script src="/PepperFeedback.js" defer></script>
     <script src="/clients/FaceRecognitionClient.js" defer></script>
     <script src="/clients/PepperClient.js" defer></script>
     <script src="/clients/StoryTellingClasses.js" defer></script>
