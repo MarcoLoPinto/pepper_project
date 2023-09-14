@@ -16,7 +16,7 @@
             <!-- Video captured from camera of the PC/stablet (getted from response) -->
             <img id="video_back" style="width: 40vh" />
             <br><br>
-            <label class="text_m" id="label_pepper_see"></label>
+            <label class="text_m" id="label_pepper_see">...</label>
         </div>
         
     </div>
@@ -25,7 +25,7 @@
         <div class="flex_col_centered">
             <h1 id="new_face_detected_title">New face detected!</h1>
             <br>
-            <img id="cropped_unk_face" style="width: 40vh" />
+            <img id="cropped_unk_face" style="width: 20vh" />
             <br>
 
             <img src="/assets/peppertale_logo.png" class="pepper_feeedback img_pulse" style="width: 20vh" />
@@ -44,7 +44,7 @@
 
     <div id="prp_page" class="page">
         <div class="flex_col_centered">
-            <h2 id="prp_title">What do you choose?</h2>
+            <h2 id="prp_title" style="margin: 60px 16px;">What do you choose?</h2>
             <div class="card-container" id="card-container">
                 <!-- <label class="card">Ask to borrow the dad's knife</label>
                 <label class="card card-chosen">Ask to borrow the dad's knife</label>
@@ -53,6 +53,11 @@
             </div>
             <img src="/assets/peppertale_logo.png" class="pepper_feeedback img_pulse" style="width: 20vh; position: absolute; top: 40%;" />
         </div>
+    </div>
+    
+    <div style="position: absolute; right: 0; bottom: 0;">
+        <!-- Video captured from camera of the PC/stablet -->
+        <video id="video_debug" style="width: 40vh; margin-top: 20px;" autoplay></video>
     </div>
     
     <script src="/config.js" defer></script>

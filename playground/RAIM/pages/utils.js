@@ -5,7 +5,7 @@ class Routing {
         // Get an array of all the div elements that are direct children of the body element
         const divs = Array.from(body.querySelectorAll('div'));
         // Filter the divs array to only include elements that have a parent of the body element
-        const bodyDivs = divs.filter(div => div.parentNode === body);
+        const bodyDivs = divs.filter(div => div.parentNode === body && div.hasAttribute('id'));
         // Extract the IDs of the body divs into a new array
         this.routes = bodyDivs.map(div => div.id);
 

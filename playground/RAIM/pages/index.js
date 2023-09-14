@@ -1,7 +1,7 @@
 //user feedback
-const pepper_feedback = new PepperFeedback("pepper_feeedback","/assets/");
+const pepper_feedback = new PepperFeedback("pepper_feeedback", "/assets/");
 // index page
-const video = document.getElementById('video');
+const video = document.getElementById(`video${config.show_video_always?"_debug":""}`);
 const video_back = document.getElementById('video_back');
 const label_pepper_see = document.getElementById('label_pepper_see');
 // new face page
@@ -177,7 +177,7 @@ class App {
                     "en-US": "You have the power to shape the course of the story!",
                     "it-IT": "Hai il potere di cambiare il corso della storia!"
                 },
-                
+
                 "PEPPER_START_GAME": {
                     "en-US": "Ok! Let us begin our journey!",
                     "it-IT": "Ok! Iniziamo il nostro viaggio!"
@@ -314,7 +314,7 @@ class App {
     }
 
     formatUser(name, age = undefined, sex = undefined) {
-        return `${name}${age != undefined ? "#"+age : ""}${sex != undefined ? "#"+sex : ""}`; // TODO: if age=undefined but sex isn't, the file name will not be correctly parsed by parseUser (TIP: put a default non numerica value, like undefined or null)
+        return `${name}${age != undefined ? "#" + age : ""}${sex != undefined ? "#" + sex : ""}`; // TODO: if age=undefined but sex isn't, the file name will not be correctly parsed by parseUser (TIP: put a default non numerica value, like undefined or null)
     }
 
     async initFaceRecognition() {
@@ -526,11 +526,11 @@ class App {
         await this.setNewFaceName(command, objList, 0);
     }
     async getFaceInfo(
-        languageTextPhrase, pepperClientMoveName, 
-        languageTextConfirmation, 
+        languageTextPhrase, pepperClientMoveName,
+        languageTextConfirmation,
         languageTextConfirmationYes, languageTextConfirmationNo
-    ){
-        while(true){
+    ) {
+        while (true) {
             try {
                 // Getting the info (name or age or sex)
                 cropped_unk_face_text.innerText = this.languageText.get(languageTextPhrase)
@@ -542,7 +542,7 @@ class App {
                 );
                 pepper_feedback.hear();
                 let info_text = await this.stt.startListening();
-                
+
                 let conf_text = this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION").replace('%s', info_text);
                 cropped_unk_face_text.innerText = conf_text;
                 pepper_feedback.speak();
@@ -553,7 +553,7 @@ class App {
                 );
                 pepper_feedback.hear();
                 let confirm_text = await this.stt.startListening();
-    
+
                 if (confirm_text.toLowerCase() == this.languageText.get("YES").toLowerCase()) {
                     pepper_feedback.speak();
                     cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_INFO_CONFIRMATION_YES");
@@ -624,7 +624,7 @@ class App {
             let sex_text = await this.getFaceInfo(
                 "PEPPER_WHAT_IS_FACE_SEX", PepperClient.MOVE_NAMES.bothArmsBumpInFront,
             );
-            
+
             pepper_feedback.speak();
             cropped_unk_face_text.innerText = this.languageText.get("PEPPER_WHAT_IS_FACE_ALL_CONFIRMATION_YES");
             await this.pepper.sayMove(
@@ -633,7 +633,7 @@ class App {
                 true
             );
             pepper_feedback.default();
-            this.state.cropped_unknown_faces[key] = this.formatUser(name_text,age_text,sex_text);
+            this.state.cropped_unknown_faces[key] = this.formatUser(name_text, age_text, sex_text);
             this.state.new_faces.push(name_text);
             await this.setNewFaceName(command, objList, idx + 1);
 
@@ -704,12 +704,12 @@ class App {
     //     return true;
     // }
 
-    async initialTalkToUser(newUser){
+    async initialTalkToUser(newUser) {
         this.routing.goToPage("explanation_page");
         // This user has already played check if user wants an explanation!
         let user = this.parseUser(this.state.chosen_one);
         let txt = "";
-        if(newUser){
+        if (newUser) {
             txt = this.languageText.get("PEPPER_NEW_USER_INTRO").replace('%s', user.name);
         }
         else {
@@ -722,7 +722,7 @@ class App {
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
             true
         );
-        while(true){
+        while (true) {
             try {
                 pepper_feedback.hear();
                 let confirm_text = await this.stt.startListening();
@@ -775,15 +775,15 @@ class App {
 
     async explainGameToUser() {
         let movements = [
-            PepperClient.MOVE_NAMES.bothArmsBumpInFront, 
+            PepperClient.MOVE_NAMES.bothArmsBumpInFront,
             PepperClient.MOVE_NAMES.excited,
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
-            PepperClient.MOVE_NAMES.bothArmsBumpInFront,  
+            PepperClient.MOVE_NAMES.bothArmsBumpInFront,
             PepperClient.MOVE_NAMES.fancyRightArmCircle,
             PepperClient.MOVE_NAMES.excited,
         ];
         pepper_feedback.speak();
-        for(let i = 0; i <= 5; i++){
+        for (let i = 0; i <= 5; i++) {
             let txt = this.languageText.get(`PEPPER_EXPLAIN_GAME_${i}`);
             label_explanation.innerText = txt;
             await this.pepper.sayMove(
@@ -833,7 +833,7 @@ class App {
                         );
                         pepper_feedback.default();
                     }
-                    else if (confirm_text.toLowerCase() == this.languageText.get("NO").toLowerCase()){
+                    else if (confirm_text.toLowerCase() == this.languageText.get("NO").toLowerCase()) {
                         let txt = this.languageText.get("PEPPER_STORY_NOT_LIKED");
                         prp_title.innerText = txt
                         pepper_feedback.speak();
@@ -857,7 +857,7 @@ class App {
                     }
                 } catch (error) {
                     this.console.error(error);
-                    let txt =  this.languageText.get("PEPPER_STORY_LIKED_NO_HEAR");
+                    let txt = this.languageText.get("PEPPER_STORY_LIKED_NO_HEAR");
                     label_explanation.innerText = txt;
                     pepper_feedback.no_hear();
                     await this.pepper.sayMove(
@@ -894,12 +894,12 @@ class App {
         for (let i in stories) {
             let storyName = stories[i];
             this.addCardToContainer(storyName);
-            if(storiesOverage.includes(storyName)){
+            if (storiesOverage.includes(storyName)) {
                 this.setCardAsOverage(i)
             }
         }
         //Saying the overage stories
-        if(storiesOverage.length > 0){
+        if (storiesOverage.length > 0) {
             storiesOverageStr = storiesOverage.join(", ")
             let txt = this.languageText.get("PEPPER_STORY_OVER_AGE").replace('%s', user.age).replace('%s', storiesOverageStr);
             prp_title.innerText = txt;
@@ -992,6 +992,44 @@ class App {
         return storyNameChosen;
     }
 
+    splitTextIntoChunks(text) {
+        const MIN_LENGTH = 50;
+        const punctuationRegex = /([,.])/g;
+        const chunks = text.split(punctuationRegex);
+        const result = [];
+        const concatenatedResult = [];
+        let addToLastSentence = false;
+
+        for (let i = 0; i < chunks.length; i += 2) {
+            const chunk = chunks[i].trim();
+            const punctuation = chunks[i + 1] || '';
+
+            if (chunk) {
+                result.push(chunk + punctuation);
+            }
+        }
+
+        for(let r of result) {
+            if(r.length < MIN_LENGTH && concatenatedResult.length > 0 && r[r.length-1] == ",") concatenatedResult[concatenatedResult.length-1] += " " + r;
+            else concatenatedResult.push(r);
+        }
+
+        return concatenatedResult;
+    }
+
+    async sayMoveLongText(prompt, mood, html_text_element) {
+        prp_title.innerText = prompt;
+        let prompts = this.splitTextIntoChunks(prompt);
+
+        for(let p of prompts){
+            await this.pepper.sayMove(
+                p,
+                mood,
+                true
+            );
+        }
+    }
+
     async startStory(storyNameChosen) {
         // Starting the story
         try {
@@ -1013,14 +1051,9 @@ class App {
                 let prompt = newPrompts[i];
                 let mood = newMoods[i];
 
-                prp_title.innerText = prompt;
                 pepper_feedback.speak();
-                await this.pepper.sayMove(
-                    prompt,
-                    mood,
-                    true
-                );
-                await this.sleep(prompt.length * 50);
+                await this.sayMoveLongText(prompt, mood, prp_title);
+                await this.sleep(200);
                 pepper_feedback.default();
             }
             // If the story is finished, exit!
@@ -1096,10 +1129,10 @@ class App {
                         true
                     );
                     pepper_feedback.default();
-                    
+
                     // Counting how many times the user didn't respond
                     repeatCount++;
-                    if(repeatCount > maxRepeatCount){
+                    if (repeatCount > maxRepeatCount) {
                         actionChosen = 0;
 
                         prp_title.innerText = this.languageText.get("PEPPER_ACTION_CHOSEN_BY_PEPPER");
@@ -1111,7 +1144,7 @@ class App {
                         );
                         pepper_feedback.default();
                     }
-                    else{
+                    else {
                         await this.sleep(1000); // TODO: check if necessary on tablet
                     }
                 }
