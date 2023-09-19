@@ -49,33 +49,38 @@ def execute_story(json_path):
 
     story_finished = False
     next_possible_bot_actions = None
+    next_possible_user_actions = None
     while not story_finished:
-        problem_strs = story.genPDDLProblems(next_actions=next_possible_bot_actions)
+        while next_possible_bot_actions == None or len(next_possible_bot_actions) != 0:
+            problem_strs = story.genPDDLProblems(next_actions=next_possible_bot_actions)
 
-        for problem_str in problem_strs:
-            story.write_problem_file(problem_str,save_path)
-            action_names = get_actions_plan(save_path)
-            if len(action_names) != 0:
-                story_finished = False
-                break
-            else:
-                story_finished = True
+            for problem_str in problem_strs:
+                story.write_problem_file(problem_str,save_path)
+                action_names = get_actions_plan(save_path)
+                # print(action_names)
+                if len(action_names) != 0:
+                    story_finished = False
+                    break
+                else:
+                    story_finished = True
+            
+            if story_finished: break
         
-        if story_finished: break
+            bot_action = story.actions[action_names[0]["action"]]
+            next_possible_bot_actions, next_possible_user_actions = story.execute_action(bot_action.name)
         
-        bot_action = story.actions[action_names[0]["action"]]
-        next_possible_user_actions = story.execute_action(bot_action.name)
-        
-        print(bot_action.text)
-        print()
-        if len(next_possible_user_actions) == 0: break
+            print(bot_action.text)
+            print()
 
-        next_action_index = get_selection([act.pretext for act in next_possible_user_actions])
-        user_action = next_possible_user_actions[next_action_index]
-        next_possible_bot_actions = story.execute_action(user_action.name)
+        while len(next_possible_user_actions) != 0:
+            next_action_index = get_selection([act.pretext for act in next_possible_user_actions])
+            user_action = next_possible_user_actions[next_action_index]
+            next_possible_bot_actions, next_possible_user_actions = story.execute_action(user_action.name)
 
-        print(user_action.text)
-        if len(next_possible_bot_actions) == 0: break
+            print(user_action.text)
+        
+        if len(next_possible_bot_actions) == 0 and len(next_possible_user_actions) == 0: 
+            story_finished = True
         
 
-execute_story("/home/pas/Documents/University/eai/patrizi/InteractiveStorytelling/PDDLs/test1/test1.json")
+execute_story("/home/pas/Documents/University/eai/iocchi/playground/StoryTelling/stories/Red Riding Hood/story.json")

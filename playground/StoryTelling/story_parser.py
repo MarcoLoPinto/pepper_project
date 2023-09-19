@@ -2,6 +2,7 @@ import json
 import os, sys
 import argparse
 from typing import Dict, Any, List, Tuple
+from copy import deepcopy
 
 DIR = os.path.realpath(os.path.dirname(__file__))
 sys.path.append(os.path.join(DIR))
@@ -59,8 +60,33 @@ class Story():
 
         self.knoweledge_base.update(action.effects)
         self.actions_history.append(action)
-        next_actions = [act for block in self.actions_children.get(action_name,([],[])) for act in block]
-        return next_actions
+        # next_actions = [act for block in self.actions_children.get(action_name,([],[])) for act in block]
+        next_bot_actions, next_user_actions = self.actions_children.get(action_name,([],[]))
+
+        next_possible_bot_actions, next_possible_user_actions = [], []
+        knoweledge_base_list = list(self.knoweledge_base.values())
+
+        # Check for bot actions preconditions
+        for act in next_bot_actions:
+            all_precond_satisfied = True
+            for precond in act.preconditions.values():
+                if precond not in knoweledge_base_list:
+                    all_precond_satisfied = False
+                    break
+            if all_precond_satisfied:
+                next_possible_bot_actions.append(act)
+
+        # Check for user actions preconditions
+        for act in next_user_actions:
+            all_precond_satisfied = True
+            for precond in act.preconditions.values():
+                if precond not in knoweledge_base_list:
+                    all_precond_satisfied = False
+                    break
+            if all_precond_satisfied:
+                next_possible_user_actions.append(act)
+
+        return next_possible_bot_actions, next_possible_user_actions
     
     
     def genPDDLDomain(self) -> str:

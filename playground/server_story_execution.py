@@ -65,7 +65,7 @@ class StoryTellingServer:
                 data=action,
                 to_client_id=command_in.from_client_id
             )
-        print(f"Story Telling Server responding to {command_out.to_client_id} with: {command_out.data}")
+        print(f"Story Telling Server responding to {command_out.to_client_id} with: {command_out.data}\n")
         self.ipc.dispatch_command(command_out)
 
     def request_listener(self, command: Command):
@@ -73,6 +73,8 @@ class StoryTellingServer:
             action = command.data["actions"][0]
             action_type = action["action_type"]
             action_properties = None if "action_properties" not in action else action["action_properties"]
+
+            print(f"{command.from_client_id} requesting to Story Telling Server: {command.data}\n")
 
             if action_type == "quit":
                 self.shutdown()
@@ -158,9 +160,9 @@ class StoryTellingServer:
         next_bot_actions = self.stories_in_execution[story_id]["next_bot_actions"]
         story_finished = self.stories_in_execution[story_id]["story_finished"]
 
-        # Requesting bot action execution, but no bot actions are available, probably the story is finished
+        # Requesting bot action execution, but no bot actions are available so simply returns
         if next_bot_actions != None and len(next_bot_actions) == 0:
-            self.stories_in_execution[story_id]["story_finished"] = False
+            # self.stories_in_execution[story_id]["story_finished"] = False
             return False # Didn't execute any bot actions on this story
 
         problem_strs = story.genPDDLProblems(next_actions=next_bot_actions)
@@ -179,10 +181,16 @@ class StoryTellingServer:
             return False # Didn't execute any bot actions on this story
         
         bot_action = story.actions[action_names[0]["action"]] # The next action in the plan
-        next_possible_user_actions = story.execute_action(bot_action.name)
+        next_possible_bot_actions, next_possible_user_actions = story.execute_action(bot_action.name)
+        self.stories_in_execution[story_id]["next_bot_actions"] = next_possible_bot_actions
         self.stories_in_execution[story_id]["next_user_actions"] = next_possible_user_actions
         
-        if len(next_possible_user_actions) == 0:
+        # If the bot has more possible action, he will execute them
+        if len(next_possible_bot_actions) != 0:
+            return self.execute_bot_action(story_id)
+
+        # If neither the user nor the bot have actions, the story is finished
+        elif len(next_possible_bot_actions) == 0 and len(next_possible_user_actions) == 0:
             self.stories_in_execution[story_id]["story_finished"] = True
             return True # Did execute a bot action on this story
 
@@ -195,21 +203,28 @@ class StoryTellingServer:
         next_bot_actions = self.stories_in_execution[story_id]["next_bot_actions"]
         story_finished = self.stories_in_execution[story_id]["story_finished"]
 
-        # Requesting user action execution, but no user actions are available, probably the story is finished
+        # Requesting user action execution, but no user actions are available so simply returns
         if len(next_user_actions) == 0:
-            self.stories_in_execution[story_id]["story_finished"] = True
+            # self.stories_in_execution[story_id]["story_finished"] = True
             return {"action_type":"story_execute_action", "action_properties":self.create_action_properties(story_id), "is_successful":False}, False
 
         user_action = next_user_actions[story_action_index]
-        next_possible_bot_actions = story.execute_action(user_action.name)
+        next_possible_bot_actions, next_possible_user_actions = story.execute_action(user_action.name)
         self.stories_in_execution[story_id]["next_bot_actions"] = next_possible_bot_actions
+        self.stories_in_execution[story_id]["next_user_actions"] = next_possible_user_actions
 
-        if len(next_possible_bot_actions) == 0:
+        # The user has more possible actions. He can execute one of them right now
+        if len(next_possible_user_actions) != 0:
+            return {"action_type":"story_execute_action", "action_properties":self.create_action_properties(story_id), "is_successful":True}, True
+        elif len(next_possible_bot_actions) != 0:
+            bot_execution_result = self.execute_bot_action(story_id)
+            return {"action_type":"story_execute_action", "action_properties":self.create_action_properties(story_id), "is_successful":True}, True
+        # If neither the user nor the bot have actions, the story is finished
+        else:
             self.stories_in_execution[story_id]["story_finished"] = True
             return {"action_type":"story_execute_action", "action_properties":self.create_action_properties(story_id), "is_successful":True}, True
 
-        bot_execution_result = self.execute_bot_action(story_id)
-        return {"action_type":"story_execute_action", "action_properties":self.create_action_properties(story_id), "is_successful":True}, True
+        
             
 
     def start_story(self,story_name,lang = "EN"):

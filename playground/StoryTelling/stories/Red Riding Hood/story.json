@@ -74,16 +74,16 @@
             "en-US": "She decided to attack him with the stick. The wolf ran away."
         },
         "HURT_WOLF_KNIFE_pt": {
-            "en-US": "The little girl uses the stick"
+            "en-US": "The little girl uses the knife"
         },
         "HURT_WOLF_KNIFE_t": {
-            "en-US": "She decided to attack him with the stick. The wolf ran away."
+            "en-US": "She decided to attack him with the knife. The wolf ran away."
         },
         "HURT_WOLF_PISTOL_pt": {
-            "en-US": "The little girl uses the stick"
+            "en-US": "The little girl uses the pistol"
         },
         "HURT_WOLF_PISTOL_t": {
-            "en-US": "She decided to attack him with the stick. The wolf ran away."
+            "en-US": "She decided to attack him with the pistol. The wolf ran away."
         },
         "GOOD_GREET_pt": {
             "en-US": "The little girl greet him back with a smile"
@@ -144,6 +144,42 @@
         },
         "WOLF3_Q1_A1_t": {
             "en-US": "She followed the wolf's suggestion and spent some time listening to the birds singing and picking flowers for her grandmother."
+        },
+        "WOLF_HOUSE1_pt": {
+            "en-US": ""
+        },
+        "WOLF_HOUSE1_t": {
+            "en-US": "The wolf arrived to the grandmother's house. After some time, the little girl also arrived there and, to her surprise, the door of the house was open."
+        },
+        "ENTER_HOUSE_pt": {
+            "en-US": "The little girl entered the house"
+        },
+        "ENTER_HOUSE_t": {
+            "en-US": "She decided to enter the house despite her fear. She saw her grandmother lying there with her cap pulled down over her face and looking very strange. Little Red Riding Hood noticed that her grandmother looked strange, with her cap pulled down over her face. She commented on her big ears and big eyes, and her grandmother replied that they were better for hearing and seeing. She then noticed her big hands and a horribly big mouth, and her grandmother replied that they were better for grabbing and eating. Suddenly, the supposed grandmother revealed himself as a wolf and jumped out of bed, attacking and devouring Little Red Riding Hood."
+        },
+        "LEAVE_HOUSE_pt": {
+            "en-US": "The little girl entered the house"
+        },
+        "LEAVE_HOUSE_t": {
+            "en-US": "She understood that something's off, so she decided to leave the house"
+        },
+        "WORLD_STAGE1_pt": {
+            "en-US": ""
+        },
+        "WORLD_STAGE1_t": {
+            "en-US": "When she left the house, she saw an huntsman passing by. She was scared that the wolf had done something bad to her grandmother and wanted to seek for help."
+        },
+        "HUNTSMAN1_pt": {
+            "en-US": "She explains to the huntsman the whole story"
+        },
+        "HUNTSMAN1_t": {
+            "en-US": "After she explained to the huntsman what happened, he understood what was going on and went inside the house. He found the wolf laying on the bed. He decided to kill him and to rescue the grandmother from the wolf's belly. Everyone was saved and they lived happily ever after."
+        },
+        "GOTO_MOM_pt": {
+            "en-US": "She returns to her mother"
+        },
+        "GOTO_MOM_t": {
+            "en-US": "The little girl was too scared to do anything, so she decided to return to her mother in order to explain what happened. After some time, an huntsman killed a wolf in the grandmother's house, but there were no traces of her, meaning that the wolf ate the poor old woman."
         }
     },
     "atoms": {
@@ -156,6 +192,7 @@
         "huntsman_pistol": false
     },
     "goal": [
+                [ "and", [ "atom","grandma_dead",true ], [ "atom","girl_dead",true ] ],
                 [ "atom","grandma_dead",true ],
                 [ "atom","girl_dead",true ],
                 [ "atom","wolf_dead",true ]
@@ -248,6 +285,158 @@
             "preconditions": {},
             "effects": {},
             "mood": "happy"
+        },
+        "HURT_WOLF_STICK": {
+            "nondeterministic": true,
+            "pretext": "HURT_WOLF_STICK_pt",
+            "text": "HURT_WOLF_STICK_t",
+            "preconditions": {"friend_stick": true},
+            "effects": {},
+            "mood": "happy"
+        },
+        "HURT_WOLF_PISTOL": {
+            "nondeterministic": true,
+            "pretext": "HURT_WOLF_PISTOL_pt",
+            "text": "HURT_WOLF_PISTOL_t",
+            "preconditions": {"huntsman_pistol": true},
+            "effects": {},
+            "mood": "happy"
+        },
+        "HURT_WOLF_KNIFE": {
+            "nondeterministic": true,
+            "pretext": "HURT_WOLF_KNIFE_pt",
+            "text": "HURT_WOLF_KNIFE_t",
+            "preconditions": {"dad_knife": true},
+            "effects": {},
+            "mood": "happy"
+        },
+        "GOOD_GREET": {
+            "nondeterministic": true,
+            "pretext": "GOOD_GREET_pt",
+            "text": "GOOD_GREET_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF_SNEAK1": {
+            "nondeterministic": false,
+            "pretext": "WOLF_SNEAK1_pt",
+            "text": "WOLF_SNEAK1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF1_Q1": {
+            "nondeterministic": false,
+            "pretext": "WOLF1_Q1_pt",
+            "text": "WOLF1_Q1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF1_Q1_A2": {
+            "nondeterministic": true,
+            "pretext": "WOLF1_Q1_A2_pt",
+            "text": "WOLF1_Q1_A2_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF1_Q1_A1": {
+            "nondeterministic": true,
+            "pretext": "WOLF1_Q1_A1_pt",
+            "text": "WOLF1_Q1_A1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF2_Q1": {
+            "nondeterministic": false,
+            "pretext": "WOLF2_Q1_pt",
+            "text": "WOLF2_Q1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF2_Q1_A2": {
+            "nondeterministic": true,
+            "pretext": "WOLF2_Q1_A2_pt",
+            "text": "WOLF2_Q1_A2_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF2_Q1_A1": {
+            "nondeterministic": true,
+            "pretext": "WOLF2_Q1_A1_pt",
+            "text": "WOLF2_Q1_A1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF3_Q1": {
+            "nondeterministic": false,
+            "pretext": "WOLF3_Q1_pt",
+            "text": "WOLF3_Q1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF3_Q1_A1": {
+            "nondeterministic": true,
+            "pretext": "WOLF3_Q1_A1_pt",
+            "text": "WOLF3_Q1_A1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WOLF_HOUSE1": {
+            "nondeterministic": false,
+            "pretext": "WOLF_HOUSE1_pt",
+            "text": "WOLF_HOUSE1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "ENTER_HOUSE": {
+            "nondeterministic": true,
+            "pretext": "ENTER_HOUSE_pt",
+            "text": "ENTER_HOUSE_t",
+            "preconditions": {},
+            "effects": {"grandma_dead": true, "girl_dead": true},
+            "mood": "happy"
+        },
+        "LEAVE_HOUSE": {
+            "nondeterministic": true,
+            "pretext": "LEAVE_HOUSE_pt",
+            "text": "LEAVE_HOUSE_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "WORLD_STAGE1": {
+            "nondeterministic": false,
+            "pretext": "WORLD_STAGE1_pt",
+            "text": "WORLD_STAGE1_t",
+            "preconditions": {},
+            "effects": {},
+            "mood": "happy"
+        },
+        "HUNTSMAN1": {
+            "nondeterministic": true,
+            "pretext": "HUNTSMAN1_pt",
+            "text": "HUNTSMAN1_t",
+            "preconditions": {},
+            "effects": {"wolf_dead": true},
+            "mood": "happy"
+        },
+        "GOTO_MOM": {
+            "nondeterministic": true,
+            "pretext": "GOTO_MOM_pt",
+            "text": "GOTO_MOM_t",
+            "preconditions": {},
+            "effects": {"grandma_dead": true, "wolf_dead": true},
+            "mood": "happy"
         }
     },
     "actions_children": {
@@ -260,6 +449,26 @@
         "GET_FRIEND_STICK": ["WOLF_APPROACH_1"],
         "GET_DAD_KNIFE": ["WOLF_APPROACH_1"],
         "GET_HUNTSMAN_PISTOL": ["WOLF_APPROACH_1"],
-        "GOTO_WOODS": ["WOLF_APPROACH_1"]
+        "GOTO_WOODS": ["WOLF_APPROACH_1"],
+        "WOLF_APPROACH_1": ["HURT_WOLF_STICK","HURT_WOLF_KNIFE","HURT_WOLF_PISTOL","GOOD_GREET"],
+        "HURT_WOLF_STICK": ["WOLF_SNEAK1"],
+        "HURT_WOLF_KNIFE": ["WOLF_SNEAK1"],
+        "HURT_WOLF_PISTOL": ["WOLF_SNEAK1"],
+        "GOOD_GREET": ["WOLF1_Q1"],
+        "WOLF_SNEAK1": ["ENTER_HOUSE","LEAVE_HOUSE"],
+        "WOLF1_Q1": ["WOLF1_Q1_A2","WOLF1_Q1_A1"],
+        "WOLF1_Q1_A2": ["WOLF_SNEAK1","WOLF2_Q1"],
+        "WOLF1_Q1_A1": ["WOLF2_Q1"],
+        "WOLF2_Q1": ["WOLF2_Q1_A2","WOLF2_Q1_A1"],
+        "WOLF2_Q1_A2": ["WOLF_SNEAK1","WOLF3_Q1"],
+        "WOLF2_Q1_A1": ["WOLF3_Q1"],
+        "WOLF3_Q1": ["WOLF3_Q1_A1"],
+        "WOLF3_Q1_A1": ["WOLF_HOUSE1"],
+        "WOLF_HOUSE1": ["ENTER_HOUSE","LEAVE_HOUSE"],
+        "ENTER_HOUSE": [],
+        "LEAVE_HOUSE": ["WORLD_STAGE1"],
+        "WORLD_STAGE1": ["HUNTSMAN1","GOTO_MOM"],
+        "HUNTSMAN1": [],
+        "GOTO_MOM": []
     }
 }

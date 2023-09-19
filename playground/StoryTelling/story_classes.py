@@ -36,6 +36,11 @@ class Atom():
         return "Atom " + self.name
     def __repr__(self) -> str:
         return "Atom " + self.name
+    def __eq__(self, other):
+        if isinstance(other, Atom):
+            return self.name == other.name and self.value == other.value
+        elif other == None:
+            return False
 
 class Action():
     def __init__(self, name:str, pretext: str, text: str, mood: str, preconditions: Dict[str, Atom] = {}, effects: Dict[str, Atom] = {}, nondeterministic: bool = False, do_action_atom: Atom = None) -> None:
