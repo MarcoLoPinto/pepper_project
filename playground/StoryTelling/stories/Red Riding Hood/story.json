@@ -212,7 +212,7 @@
             "text": "GOTO_PIAZZA_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "curious"
         },
         "GOTO_MARKET": {
             "nondeterministic": true,
@@ -220,7 +220,7 @@
             "text": "GOTO_MARKET_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "curious"
         },
         "GOTO_WOODS": {
             "nondeterministic": true,
@@ -228,7 +228,7 @@
             "text": "GOTO_WOODS_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "excited"
         },
         "VILLAGE_ENCOUNTER_FRIENDS": {
             "nondeterministic": false,
@@ -252,7 +252,7 @@
             "text": "VILLAGE_ENCOUNTER_HUNTSMAN_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "confused"
         },
         "GET_FRIEND_STICK": {
             "nondeterministic": true,
@@ -260,7 +260,7 @@
             "text": "GET_FRIEND_STICK_t",
             "preconditions": {},
             "effects": {"friend_stick": true},
-            "mood": "happy"
+            "mood": "thinking"
         },
         "GET_DAD_KNIFE": {
             "nondeterministic": true,
@@ -268,7 +268,7 @@
             "text": "GET_DAD_KNIFE_t",
             "preconditions": {},
             "effects": {"dad_knife": true},
-            "mood": "happy"
+            "mood": "thinking"
         },
         "GET_HUNTSMAN_PISTOL": {
             "nondeterministic": true,
@@ -276,7 +276,7 @@
             "text": "GET_HUNTSMAN_PISTOL_t",
             "preconditions": {},
             "effects": {"huntsman_pistol": true},
-            "mood": "happy"
+            "mood": "thinking"
         },
         "WOLF_APPROACH_1": {
             "nondeterministic": false,
@@ -284,7 +284,7 @@
             "text": "WOLF_APPROACH_1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "confused"
         },
         "HURT_WOLF_STICK": {
             "nondeterministic": true,
@@ -292,7 +292,7 @@
             "text": "HURT_WOLF_STICK_t",
             "preconditions": {"friend_stick": true},
             "effects": {},
-            "mood": "happy"
+            "mood": "fear"
         },
         "HURT_WOLF_PISTOL": {
             "nondeterministic": true,
@@ -300,7 +300,7 @@
             "text": "HURT_WOLF_PISTOL_t",
             "preconditions": {"huntsman_pistol": true},
             "effects": {},
-            "mood": "happy"
+            "mood": "fear"
         },
         "HURT_WOLF_KNIFE": {
             "nondeterministic": true,
@@ -308,7 +308,7 @@
             "text": "HURT_WOLF_KNIFE_t",
             "preconditions": {"dad_knife": true},
             "effects": {},
-            "mood": "happy"
+            "mood": "fear"
         },
         "GOOD_GREET": {
             "nondeterministic": true,
@@ -324,7 +324,7 @@
             "text": "WOLF_SNEAK1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "fancyRightArmCircle"
         },
         "WOLF1_Q1": {
             "nondeterministic": false,
@@ -332,7 +332,7 @@
             "text": "WOLF1_Q1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "thinking"
         },
         "WOLF1_Q1_A2": {
             "nondeterministic": true,
@@ -340,7 +340,7 @@
             "text": "WOLF1_Q1_A2_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "bothArmsBumpInFront"
         },
         "WOLF1_Q1_A1": {
             "nondeterministic": true,
@@ -356,7 +356,7 @@
             "text": "WOLF2_Q1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "thinking"
         },
         "WOLF2_Q1_A2": {
             "nondeterministic": true,
@@ -364,7 +364,7 @@
             "text": "WOLF2_Q1_A2_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "bothArmsBumpInFront"
         },
         "WOLF2_Q1_A1": {
             "nondeterministic": true,
@@ -380,7 +380,7 @@
             "text": "WOLF3_Q1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "thinking"
         },
         "WOLF3_Q1_A1": {
             "nondeterministic": true,
@@ -396,7 +396,7 @@
             "text": "WOLF_HOUSE1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "fear"
         },
         "ENTER_HOUSE": {
             "nondeterministic": true,
@@ -404,7 +404,7 @@
             "text": "ENTER_HOUSE_t",
             "preconditions": {},
             "effects": {"grandma_dead": true, "girl_dead": true},
-            "mood": "happy"
+            "mood": "fear"
         },
         "LEAVE_HOUSE": {
             "nondeterministic": true,
@@ -412,7 +412,7 @@
             "text": "LEAVE_HOUSE_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "confused"
         },
         "WORLD_STAGE1": {
             "nondeterministic": false,
@@ -420,7 +420,7 @@
             "text": "WORLD_STAGE1_t",
             "preconditions": {},
             "effects": {},
-            "mood": "happy"
+            "mood": "fear"
         },
         "HUNTSMAN1": {
             "nondeterministic": true,
@@ -436,7 +436,7 @@
             "text": "GOTO_MOM_t",
             "preconditions": {},
             "effects": {"grandma_dead": true, "wolf_dead": true},
-            "mood": "happy"
+            "mood": "fear"
         }
     },
     "actions_children": {

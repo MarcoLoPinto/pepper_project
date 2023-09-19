@@ -67,8 +67,8 @@ class App {
                     "it-IT": "Non è corretto? Allora riproviamo"
                 },
                 "PEPPER_WHAT_IS_FACE_AGE": {
-                    "en-US": "And what is the age?",
-                    "it-IT": "E qual'è l'età?"
+                    "en-US": "And how old are you?",
+                    "it-IT": "E quanti anni hai?"
                 },
                 "PEPPER_WHAT_IS_FACE_AGE_CONFIRMATION": {
                     "en-US": "So the age is %s, correct?",

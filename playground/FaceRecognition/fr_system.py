@@ -30,7 +30,8 @@ class FaceRecognition:
         self.faces_dir = os.path.join( os.path.dirname(os.path.abspath(__file__) ), "faces/")
         self.init_state(RESIZE_VALUE, UNKNOWN_FACE_THRESHOLD)
 
-    def init_state(self, RESIZE_VALUE = 4, UNKNOWN_FACE_THRESHOLD = 10):
+    def init_state(self, RESIZE_VALUE = 4, UNKNOWN_FACE_THRESHOLD = 10, BOUNDING_BOX_PADDING = 60):
+        self.BOUNDING_BOX_PADDING = BOUNDING_BOX_PADDING
         self.RESIZE_VALUE = RESIZE_VALUE
         self.UNKNOWN_FACE_THRESHOLD = UNKNOWN_FACE_THRESHOLD
         # known faces on faces directory
@@ -199,6 +200,11 @@ class FaceRecognition:
             right *= self.RESIZE_VALUE
             bottom *= self.RESIZE_VALUE
             left *= self.RESIZE_VALUE
+
+            top -= self.BOUNDING_BOX_PADDING
+            right += self.BOUNDING_BOX_PADDING
+            bottom += self.BOUNDING_BOX_PADDING
+            left -= self.BOUNDING_BOX_PADDING
 
             cropped_unknown_face = self.frame[top:bottom, left:right]
             if convert_to_base64:
