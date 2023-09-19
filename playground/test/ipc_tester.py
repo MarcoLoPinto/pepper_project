@@ -1,7 +1,10 @@
 # This file can be used to generate commands to test other connections
 import os, sys
+DIR = os.path.realpath(os.path.dirname(__file__))
+sys.path.append(os.path.abspath(os.path.join(DIR,"../")))
+
 from RAIM.ipc_client import IPCClient
-from RAIM.ipc_command import Command
+from RAIM.raim_command import Command
 
 ipc_server_host = "localhost"
 ipc_server_port = 5001

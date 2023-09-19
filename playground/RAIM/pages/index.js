@@ -1018,7 +1018,7 @@ class App {
     }
 
     async sayMoveLongText(prompt, mood, html_text_element) {
-        prp_title.innerText = prompt;
+        html_text_element.innerText = prompt;
         let prompts = this.splitTextIntoChunks(prompt);
 
         for(let p of prompts){

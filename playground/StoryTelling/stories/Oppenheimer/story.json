@@ -68,7 +68,7 @@
             "effects": {},
             "mood": "happy"
         },
-        "a2": {
+        "A2": {
             "nondeterministic": true,
             "pretext": "pt2",
             "text": "t2",
@@ -108,8 +108,8 @@
         }
     },
     "actions_children": {
-        "a0": ["a1","a2"],
+        "a0": ["a1","A2"],
         "a1": ["a3"],
-        "a2": ["a4","a5"]
+        "A2": ["a4","a5"]
     }
 }

@@ -66,6 +66,84 @@
         },
         "WOLF_APPROACH_1_t": {
             "en-US": "A little after entering the woods, a wolf came up to her. He gently greeted her and wished her a good day."
+        },
+        "HURT_WOLF_STICK_pt": {
+            "en-US": "The little girl uses the stick"
+        },
+        "HURT_WOLF_STICK_t": {
+            "en-US": "She decided to attack him with the stick. The wolf ran away."
+        },
+        "HURT_WOLF_KNIFE_pt": {
+            "en-US": "The little girl uses the stick"
+        },
+        "HURT_WOLF_KNIFE_t": {
+            "en-US": "She decided to attack him with the stick. The wolf ran away."
+        },
+        "HURT_WOLF_PISTOL_pt": {
+            "en-US": "The little girl uses the stick"
+        },
+        "HURT_WOLF_PISTOL_t": {
+            "en-US": "She decided to attack him with the stick. The wolf ran away."
+        },
+        "GOOD_GREET_pt": {
+            "en-US": "The little girl greet him back with a smile"
+        },
+        "GOOD_GREET_t": {
+            "en-US": "She decided to greet him back with a smile."
+        },
+        "WOLF_SNEAK1_pt": {
+            "en-US": ""
+        },
+        "WOLF_SNEAK1_t": {
+            "en-US": "The wolf decided to follow the little girl in order to understand in which direction she was headed. When he understood where was the house she was visiting, he decided to sprint in order to arrive there before the little girl. The wolf arrived to the grandmother's house. After some time, the little girl also arrived there and, to her surprise, the door of the house was open."
+        },
+        "WOLF1_Q1_pt": {
+            "en-US": ""
+        },
+        "WOLF1_Q1_t": {
+            "en-US": "The wolf asked her where was she going so early."
+        },
+        "WOLF1_Q1_A2_pt": {
+            "en-US": "She decided to avoid answering the question"
+        },
+        "WOLF1_Q1_A2_t": {
+            "en-US": "She answered by telling him that she was going somewhere not far from there."
+        },
+        "WOLF1_Q1_A1_pt": {
+            "en-US": "She decided to tell him where she was going"
+        },
+        "WOLF1_Q1_A1_t": {
+            "en-US": "She answered by telling him that she was going to give her sick grandmother cake and wine."
+        },
+        "WOLF2_Q1_pt": {
+            "en-US": ""
+        },
+        "WOLF2_Q1_t": {
+            "en-US": "The wolf asked her about the location of her grandmother's residence."
+        },
+        "WOLF2_Q1_A2_pt": {
+            "en-US": "She decided to avoid answering the question"
+        },
+        "WOLF2_Q1_A2_t": {
+            "en-US": "She answered by avoiding giving details of where the old woman lived."
+        },
+        "WOLF2_Q1_A1_pt": {
+            "en-US": "She decided to tell him the location of her grandmother's residence"
+        },
+        "WOLF2_Q1_A1_t": {
+            "en-US": "She answered by telling him that she lives a good quarter hour from here in the woods, under the three large oak trees."
+        },
+        "WOLF3_Q1_pt": {
+            "en-US": ""
+        },
+        "WOLF3_Q1_t": {
+            "en-US": "The wolf suggested her to take a look at the beautiful flowers blossoming in the woods and to spend time listening to the birds singing before going to her grandmother's house."
+        },
+        "WOLF3_Q1_A1_pt": {
+            "en-US": "She decided to spend time listening to the birds before going to her grandmother's residence"
+        },
+        "WOLF3_Q1_A1_t": {
+            "en-US": "She followed the wolf's suggestion and spent some time listening to the birds singing and picking flowers for her grandmother."
         }
     },
     "atoms": {

@@ -70,6 +70,9 @@ class RAIMClient {
     print(text) {
         if (this.debug) console.log(text)
     }
+    async sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     connect(protocol = "ws", host = "localhost", port = 5002) {
         let portStr = port == 0 ? "" : `:${port}`
@@ -95,6 +98,13 @@ class RAIMClient {
                 this.connected = false
                 if (this.onDisconnect) this.onDisconnect();
             };
+
+            this.socket.sendWhenConnected = async function(data){
+                while(this.connected == false){
+                    await this.sleep(50)
+                }
+                this.socket.send(data)
+            }.bind(this)
         })
     }
 
@@ -133,8 +143,10 @@ class RAIMClient {
             }
 
             try {
-                this.socket.send(command.toJson());
-                this.print(`${this.name} sent a command to ${command.to_client_id}: ${JSON.stringify(command.data)}`);
+                (async () => {
+                    await this.socket.sendWhenConnected(command.toJson());
+                    this.print(`${this.name} sent a command to ${command.to_client_id}: ${JSON.stringify(command.data)}`);
+                })();
             } catch (error) {
                 reject(error);
             }

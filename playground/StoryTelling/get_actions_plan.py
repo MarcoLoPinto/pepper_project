@@ -6,8 +6,8 @@ DIR = os.path.realpath(os.path.dirname(__file__))
 
 def get_actions_plan(pddl_folder_path, options = '--debug-output 1 --dump-policy 2 --detect-deadends 1', do_print=False):
     # Prepare the input
-    pddl_domain_filepath = os.path.join(pddl_folder_path, 'domain.pddl')
-    pddl_problem_filepath = os.path.join(pddl_folder_path, 'problem.pddl')
+    pddl_domain_filepath = os.path.join(pddl_folder_path, 'domain.pddl').replace(" ","\ ")
+    pddl_problem_filepath = os.path.join(pddl_folder_path, 'problem.pddl').replace(" ","\ ")
     # Run the bash script and capture the output
     output = os.popen('%s/PRP/src/prp %s %s %s' %(DIR,pddl_domain_filepath, pddl_problem_filepath, options)).read()
     # Save the formatted output in list of actions and results

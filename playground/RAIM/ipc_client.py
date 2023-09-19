@@ -69,7 +69,8 @@ class IPCClient():
     def dispatch_command(self, command, response_callback = None):
         """
         Called when this client has to send a command to another client.
-        The command.to_client_id decides the receiver. If command.to_client_id is 0 the command is broadcasted
+        The command.to_client_id decides the receiver. If command.to_client_id is 0 the command is broadcasted.
+        If not None, response_callback is the function called when the receiver of this command responds to this request
         """
         if command.from_client_id == "": command.from_client_id = self.name
         if response_callback != None and command.request == True:

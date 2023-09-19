@@ -1,8 +1,11 @@
 import json
-import os
+import os, sys
 import argparse
 from typing import Dict, Any, List, Tuple
-from .story_classes import Action, Atom, Goal
+
+DIR = os.path.realpath(os.path.dirname(__file__))
+sys.path.append(os.path.join(DIR))
+from story_classes import Action, Atom, Goal
 
 story_json_template = """
 {
@@ -42,7 +45,7 @@ class Story():
         self.goal = goal
         self.actions = actions
         self.do_action_atoms = do_action_atoms
-        self.actions_children = actions_children
+        self.actions_children = actions_children # A dictionary made like: {action_name:(next deterministic actions, next nondeterministic action)}
 
         self.knoweledge_base = {
             key:atom.clone() for key,atom in self.atoms_init.items()
@@ -112,7 +115,7 @@ def read_story_file(path, lang="en-US") -> Story:
     with open(path, "r") as f:
         story_obj = json.load(f)
 
-    root_action_name = story_obj["root_action"]
+    root_action_name = story_obj["root_action"].lower() # Cause PDDL is case insensitive
 
     # Selecting the right values given the selected language
     og_values_set = story_obj["values_set"]
@@ -138,6 +141,7 @@ def read_story_file(path, lang="en-US") -> Story:
     actions: Dict[str, Action] = {}
     do_action_atoms: Dict[str, Atom] = {}
     for action_name, action_val in og_actions.items():
+        action_name = action_name.lower() # Cause PDDL is case insensitive
 
         preconditions = {}
         for precond_atom_name, precond_atom_val in action_val["preconditions"].items():
@@ -169,9 +173,11 @@ def read_story_file(path, lang="en-US") -> Story:
     og_actions_children = story_obj["actions_children"]
     actions_children: Dict[str, Tuple[List[Action]]] = {}
     for action_name, act_children in og_actions_children.items():
+        action_name = action_name.lower() # Cause PDDL is case insensitive
         det_children: List[Action] = []
         nondet_children: List[Action] = []
         for child_name in act_children:
+            child_name = child_name.lower() # Cause PDDL is case insensitive
             child_action = actions[child_name]
             if child_action.nondeterministic:
                 nondet_children.append(actions[child_name])
