@@ -1,5 +1,5 @@
 # PepperTale: Interactive Storytelling with Pepper
-This project was created for the course "Elective in AI (HRI & RA)" course at Sapienza University of Rome. <br>
+This project was created for the course "Elective in AI (HRI & RA)" at Sapienza University of Rome. <br>
 
 The **HRI_Report.pdf** file describes the solution adopted in detail. <br>
 
